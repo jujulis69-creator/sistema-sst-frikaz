@@ -1,0 +1,6 @@
+{
+  "name": "Gestión Normativa SST y Ambiental — Frikaz S.A.S.",
+  "description": "Sistema automatizado de gestión y seguimiento normativo en Seguridad y Salud en el Trabajo y Gestión Ambiental para Frikaz S.A.S. (Bosa, Bogotá D.C.).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

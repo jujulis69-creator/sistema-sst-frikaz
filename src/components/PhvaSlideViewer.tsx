@@ -25,6 +25,7 @@ import {
   Plus,
   Edit3,
   SlidersHorizontal,
+  FileSpreadsheet,
 } from 'lucide-react';
 
 interface PhvaSlideViewerProps {
@@ -38,6 +39,7 @@ interface PhvaSlideViewerProps {
   onUpdateStatus: (id: string, newStatus: EstadoCumplimiento) => void;
   onReset: () => void;
   onAddNewNorma?: (fase?: FasePhva) => void;
+  onOpenMatrizExcel?: () => void;
 }
 
 export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
@@ -51,6 +53,7 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
   onUpdateStatus,
   onReset,
   onAddNewNorma,
+  onOpenMatrizExcel,
 }) => {
   const [activeFase, setActiveFase] = useState<FasePhva>('PLANEAR');
   const [searchTerm, setSearchTerm] = useState('');
@@ -134,15 +137,60 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
                 <span className="text-xs text-slate-300 font-medium">
                   {presentationConfig.banner.empresaInfo}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPresEditorTab('banner');
+                    setIsPresEditorOpen(true);
+                  }}
+                  className="p-1 rounded-md text-orange-200/70 hover:text-white hover:bg-white/10 transition-colors"
+                  title="Editar etiquetas y contexto del banner"
+                >
+                  <Edit3 className="h-3 w-3" />
+                </button>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-xs">
-                {presentationConfig.banner.titulo}
-              </h1>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-xs">
+                  {presentationConfig.banner.titulo}
+                </h1>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPresEditorTab('banner');
+                    setIsPresEditorOpen(true);
+                  }}
+                  className="p-1.5 rounded-lg bg-white/10 text-orange-200 hover:text-white hover:bg-white/20 transition-colors shrink-0"
+                  title="Editar título principal y descripción"
+                >
+                  <Edit3 className="h-4 w-4" />
+                </button>
+              </div>
 
-              <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-                {presentationConfig.banner.descripcion}
-              </p>
+              <div className="flex items-start gap-2">
+                <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                  {presentationConfig.banner.descripcion}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPresEditorTab('banner');
+                    setIsPresEditorOpen(true);
+                  }}
+                  className="p-1 rounded text-slate-400 hover:text-orange-200 shrink-0"
+                  title="Editar descripción del banner"
+                >
+                  <Edit3 className="h-3 w-3" />
+                </button>
+              </div>
+
+              {/* Watermark badge inside banner */}
+              <div className="pt-1 flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-white/10 border border-white/15 text-[10px] font-bold text-orange-100">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>MARCA DE AGUA CORPORATIVA: SG-SST OFICIAL</span>
+                </span>
+              </div>
             </div>
           </div>
 
@@ -160,6 +208,18 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
               <Edit3 className="h-4 w-4" />
               <span>Editar Toda la Presentación</span>
             </button>
+
+            {onOpenMatrizExcel && (
+              <button
+                type="button"
+                onClick={onOpenMatrizExcel}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 px-3 py-2 text-xs font-black text-white transition-all shadow-md cursor-pointer"
+                title="Abrir módulo oficial: Matriz Excel Automatizada (.xlsx con fórmulas)"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Matriz Excel (.xlsx)</span>
+              </button>
+            )}
 
             {onAddNewNorma && (
               <button
@@ -394,8 +454,20 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
           </span>
         </div>
 
-        {/* 4 Quadrants/Columns representing the 4 slide sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Container with subtle corporate watermark stamp */}
+        <div className="relative">
+          {/* Subtle Watermark Stamp */}
+          <div className="absolute right-4 bottom-4 pointer-events-none select-none opacity-[0.05] hidden lg:flex items-center gap-3 z-0">
+            <ShieldCheck className="h-32 w-32 text-[#0f172a]" />
+            <div>
+              <div className="text-xl font-black uppercase text-[#0f172a]">FRIKAZ S.A.S.</div>
+              <div className="text-xs font-bold text-[#0f172a]">FASE {activeFase} · SG-SST OFICIAL</div>
+              <div className="text-[10px] font-mono text-[#0f172a]">SUIN-JURISCOL · DEC 1072/2015</div>
+            </div>
+          </div>
+
+          {/* 4 Quadrants/Columns representing the 4 slide sections */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
           {presentationConfig.fases[activeFase].modulos.map((sub, idx) => {
             const subItems = faseItems.filter((i) => i.subtema === sub.subtema);
 
@@ -550,6 +622,7 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
           })}
         </div>
       </div>
+    </div>
 
       {/* TEACHER SLIDE 5 PROMPT REMINDER INLINE */}
       <div className="rounded-xl border border-orange-200 bg-[#fff7ed] p-5 shadow-xs text-slate-800 text-xs">

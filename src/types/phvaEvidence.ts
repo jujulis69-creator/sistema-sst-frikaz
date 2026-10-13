@@ -22,7 +22,12 @@ export type SubtemaPhva =
   | 'REQUERIMIENTOS DE LA AUTORIDAD'
   | 'CIERRE DE CICLO';
 
-export type EstadoCumplimiento = 'CUMPLE' | 'PARCIAL' | 'NO_CUMPLE';
+export type EstadoCumplimiento =
+  | 'CUMPLE'
+  | 'PARCIAL'
+  | 'NO_CUMPLE'
+  | 'PENDIENTE'
+  | 'NO_APLICA';
 
 export interface NormaPhvaItem {
   id: string;

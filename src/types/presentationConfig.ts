@@ -13,6 +13,11 @@ export interface FasePresentacionConfig {
 }
 
 export interface ConfiguracionPresentacion {
+  appHeader: {
+    empresa: string;
+    subtitulo: string;
+    badge: string;
+  };
   banner: {
     etiqueta: string;
     subetiqueta: string;
@@ -25,9 +30,18 @@ export interface ConfiguracionPresentacion {
     titulo: string;
     descripcion: string;
   };
+  matrizTabla: {
+    titulo: string;
+    descripcion: string;
+  };
 }
 
 export const CONFIG_PRESENTACION_DEFAULT: ConfiguracionPresentacion = {
+  appHeader: {
+    empresa: 'FRIKAZ S.A.S.',
+    subtitulo: 'Evidencia 1 — Herramienta Automatizada SST y Ambiental (PHVA)',
+    badge: 'Bosa · 10 Trab.',
+  },
   banner: {
     etiqueta: 'EVIDENCIA 1 — PRESENTACIÓN OFICIAL',
     subetiqueta: 'HERRAMIENTA AUTOMATIZADA',
@@ -44,23 +58,23 @@ export const CONFIG_PRESENTACION_DEFAULT: ConfiguracionPresentacion = {
       modulos: [
         {
           subtema: 'DIAGNÓSTICO',
-          titulo: 'Diagnóstico & Clasificación de Riesgo',
-          desc: 'Diagnóstico y clasificación de riesgo (ARL) y Política/objetivos ambientales y SST.',
-        },
-        {
-          subtema: 'ASIGNACIÓN',
-          titulo: 'Asignación del Responsable',
-          desc: 'Responsable formal del SG-SST con certificación de 50 horas (Res. 0312/2019).',
-        },
-        {
-          subtema: 'MATRIZ LEGAL Y PLAN ANUAL',
-          titulo: 'Matriz Legal y Plan Anual de Trabajo',
-          desc: 'Manejo de residuos/ACU, vertimientos, emisiones, ruido, matriz legal y cronograma anual.',
+          titulo: 'Módulo 1: Diagnóstico',
+          desc: 'Diagnóstico y clasificación de riesgo (Decreto 1072/2015, ISO 14001:2026) y Política/objetivos ambientales y SST (Ley 99/1993).',
         },
         {
           subtema: 'PELIGROS Y ASPECTOS AMBIENTALES',
-          titulo: 'Peligros y Aspectos Ambientales',
-          desc: 'Identificación de peligros (GTC 45) en fritura/corte y uso eficiente de recursos naturales.',
+          titulo: 'Módulo 2: Peligros y Aspectos Ambientales',
+          desc: 'Identificación de peligros (Decreto 1443/2014, ISO 14001:2026) y uso adecuado de recursos naturales (Ley 99/1993).',
+        },
+        {
+          subtema: 'ASIGNACIÓN',
+          titulo: 'Módulo 3: Asignación',
+          desc: 'Responsable del SG-SST (Decreto 1443/2014 compilado en Decreto 1072/2015, perfil y curso 50 horas).',
+        },
+        {
+          subtema: 'MATRIZ LEGAL Y PLAN ANUAL',
+          titulo: 'Módulo 4: Matriz Legal y Plan Anual',
+          desc: 'Residuos RESPEL (Dec. 4741/2005), emisiones/ruido (Res. 0627/2006, Ley 2450/2025), matriz legal y plan anual (Dec. 1072/2015, Dec. 1076/2015).',
         },
       ],
     },
@@ -150,5 +164,10 @@ export const CONFIG_PRESENTACION_DEFAULT: ConfiguracionPresentacion = {
     titulo: 'Guía de Evaluación del Docente (Evidencia 1): Los 6 Círculos Obligatorios',
     descripcion:
       'Cada norma identificada en esta herramienta responde a los 6 elementos evaluados en el proyector: 1. Descripción (qué regula), 2. Importancia (por qué es clave para Frikaz S.A.S. con 10 trabajadores y freidoras), 3. Aplicabilidad (qué debe hacer la pyme), 4. Vigente (comprobación de vigencia en la normativa colombiana), 5. Jurisdicción y Alcance (ámbito distrital Bogotá SDA / MinTrabajo nacional), y 6. Evidencia para Cumplimiento (soporte documental exigido).',
+  },
+  matrizTabla: {
+    titulo: 'Matriz Normativa Completa de Requisitos Legales',
+    descripcion:
+      'Total de disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S. (haga clic en Editar para modificar cualquier campo).',
   },
 };

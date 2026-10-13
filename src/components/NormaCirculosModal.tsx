@@ -308,8 +308,10 @@ export const NormaCirculosModal: React.FC<NormaCirculosModalProps> = ({
                       className="w-full rounded-lg border border-slate-300 p-2 text-xs focus:border-[#0f172a] focus:outline-hidden bg-white font-bold"
                     >
                       <option value="CUMPLE">✓ CUMPLE (100%)</option>
-                      <option value="PARCIAL">~ PARCIAL (50%)</option>
+                      <option value="PARCIAL">~ CUMPLE PARCIALMENTE (50%)</option>
                       <option value="NO_CUMPLE">✕ NO CUMPLE (0%)</option>
+                      <option value="PENDIENTE">⏳ PENDIENTE DE EVALUACIÓN</option>
+                      <option value="NO_APLICA">∅ NO APLICA JUSTIFICADO</option>
                     </select>
                   </div>
                 </div>
@@ -577,6 +579,30 @@ export const NormaCirculosModal: React.FC<NormaCirculosModalProps> = ({
                   >
                     <AlertTriangle className="h-4 w-4" />
                     <span>No Cumple (0%)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onUpdateStatus(formData.id, 'PENDIENTE')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      formData.estado === 'PENDIENTE'
+                        ? 'bg-slate-700 text-white shadow-xs'
+                        : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <span>Pendiente</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onUpdateStatus(formData.id, 'NO_APLICA')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      formData.estado === 'NO_APLICA'
+                        ? 'bg-blue-700 text-white shadow-xs'
+                        : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <span>No Aplica</span>
                   </button>
                 </div>
               </div>

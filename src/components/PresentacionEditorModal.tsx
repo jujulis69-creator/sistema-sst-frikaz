@@ -41,7 +41,23 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(JSON.parse(JSON.stringify(config)));
+      const cloned = JSON.parse(JSON.stringify(config));
+      // Ensure appHeader and matrizTabla exist
+      if (!cloned.appHeader) {
+        cloned.appHeader = {
+          empresa: 'FRIKAZ S.A.S.',
+          subtitulo: 'Evidencia 1 — Herramienta Automatizada SST y Ambiental (PHVA)',
+          badge: 'Bosa · 10 Trab.',
+        };
+      }
+      if (!cloned.matrizTabla) {
+        cloned.matrizTabla = {
+          titulo: 'Matriz Normativa Completa de Requisitos Legales',
+          descripcion:
+            'Total de disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S. (haga clic en Editar para modificar).',
+        };
+      }
+      setFormData(cloned);
       setActiveTab(initialTab);
       setSelectedFase(activeFaseDefault);
       setSaveSuccess(false);
@@ -70,6 +86,19 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
     }
   };
 
+  const updateAppHeaderField = (field: 'empresa' | 'subtitulo' | 'badge', value: string) => {
+    setFormData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        appHeader: {
+          ...prev.appHeader,
+          [field]: value,
+        },
+      };
+    });
+  };
+
   const updateBannerField = (field: keyof typeof formData.banner, value: string) => {
     setFormData((prev) => {
       if (!prev) return prev;
@@ -77,6 +106,19 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
         ...prev,
         banner: {
           ...prev.banner,
+          [field]: value,
+        },
+      };
+    });
+  };
+
+  const updateMatrizTablaField = (field: 'titulo' | 'descripcion', value: string) => {
+    setFormData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        matrizTabla: {
+          ...prev.matrizTabla,
           [field]: value,
         },
       };
@@ -255,12 +297,67 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
             </div>
           )}
 
-          {/* TAB 1: BANNER PRINCIPAL */}
+          {/* TAB 1: BANNER PRINCIPAL & ENCABEZADO DE APLICACIÓN */}
           {activeTab === 'banner' && (
-            <div className="space-y-4">
+            <div className="space-y-5">
+              {/* Sección 1.1: Barra Superior de la Aplicación */}
+              <div className="rounded-xl border border-slate-300 bg-slate-50/80 p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="font-black text-slate-900 text-xs uppercase flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#f97316]" />
+                    Barra Superior de Navegación (Header General):
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-bold">
+                    Visible en toda la aplicación
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">
+                      Nombre de la Empresa (Título Header):
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.appHeader?.empresa || ''}
+                      onChange={(e) => updateAppHeaderField('empresa', e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 p-2 text-xs font-bold text-slate-900 bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">
+                      Distintivo / Badge (Sede/Trabajadores):
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.appHeader?.badge || ''}
+                      onChange={(e) => updateAppHeaderField('badge', e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 p-2 text-xs font-semibold text-slate-900 bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">
+                      Subtítulo Oficial de la Barra:
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.appHeader?.subtitulo || ''}
+                      onChange={(e) => updateAppHeaderField('subtitulo', e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 p-2 text-xs text-slate-700 bg-white"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sección 1.2: Banner de la Presentación */}
               <div className="bg-[#fff7ed] border border-orange-200 rounded-xl p-3.5">
                 <span className="font-bold text-orange-950 text-xs uppercase block">
-                  Encabezado Principal de la Presentación:
+                  Encabezado Principal de la Presentación (Banner PHVA):
                 </span>
                 <p className="text-[11px] text-orange-900 mt-0.5">
                   Modifique el título, subtítulo, etiquetas de evidencia y texto descriptivo que aparecen en la parte superior.
@@ -276,7 +373,7 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
                     type="text"
                     value={formData.banner.titulo}
                     onChange={(e) => updateBannerField('titulo', e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 p-2.5 text-xs font-bold text-slate-900 focus:border-[#0f172a] focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-300 p-2.5 text-xs font-bold text-slate-900 focus:border-[#0f172a] focus:outline-hidden bg-white"
                     required
                   />
                 </div>
@@ -289,7 +386,7 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
                     rows={3}
                     value={formData.banner.descripcion}
                     onChange={(e) => updateBannerField('descripcion', e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 p-2 text-xs text-slate-700 focus:border-[#0f172a] focus:outline-hidden"
+                    className="w-full rounded-lg border border-slate-300 p-2 text-xs text-slate-700 focus:border-[#0f172a] focus:outline-hidden bg-white"
                     required
                   />
                 </div>
@@ -495,6 +592,42 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
                   value={formData.guiaDocente.descripcion}
                   onChange={(e) => updateGuiaField('descripcion', e.target.value)}
                   className="w-full rounded-lg border border-slate-300 p-2.5 text-xs text-slate-700 leading-relaxed"
+                  required
+                />
+              </div>
+
+              {/* Matriz Normativa Completa */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 mt-6">
+                <span className="font-bold text-slate-900 text-xs uppercase block">
+                  Encabezado de la Vista "Matriz Normativa Completa":
+                </span>
+                <p className="text-[11px] text-slate-600 mt-0.5">
+                  Personalice el título y la descripción de la tabla general de requisitos legales.
+                </p>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Título de la Vista de Matriz:
+                </label>
+                <input
+                  type="text"
+                  value={formData.matrizTabla?.titulo || ''}
+                  onChange={(e) => updateMatrizTablaField('titulo', e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 p-2.5 text-xs font-bold text-slate-900 bg-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Descripción / Instrucción de la Matriz:
+                </label>
+                <textarea
+                  rows={2}
+                  value={formData.matrizTabla?.descripcion || ''}
+                  onChange={(e) => updateMatrizTablaField('descripcion', e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 p-2 text-xs text-slate-700 bg-white"
                   required
                 />
               </div>

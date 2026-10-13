@@ -5,6 +5,10 @@ import {
   IndicadoresAutomaticos,
 } from './types/phvaEvidence';
 import {
+  ConfiguracionPresentacion,
+  CONFIG_PRESENTACION_DEFAULT,
+} from './types/presentationConfig';
+import {
   getPhvaNorms,
   updatePhvaNormStatus,
   updatePhvaNormFull,
@@ -12,8 +16,16 @@ import {
   resetPhvaNormsToDefault,
   calcularIndicadoresPhva,
 } from './services/phvaService';
+import {
+  getPresentationConfig,
+  savePresentationConfig,
+  resetPresentationConfig,
+} from './services/presentationService';
 import { PhvaSlideViewer } from './components/PhvaSlideViewer';
 import { NormaCirculosModal } from './components/NormaCirculosModal';
+import { PresentacionEditorModal } from './components/PresentacionEditorModal';
+import { CorporateWatermark, WatermarkIntensity } from './components/CorporateWatermark';
+import { MatrizExcelView } from './components/MatrizExcelView';
 import {
   ShieldCheck,
   Leaf,
@@ -30,13 +42,19 @@ import {
   Edit3,
   Save,
   Search,
+  Sparkles,
+  FileSpreadsheet,
 } from 'lucide-react';
 
-type TabView = 'phva_slides' | 'matriz_tabla' | 'ficha_empresa';
+type TabView = 'phva_slides' | 'matriz_tabla' | 'matriz_excel' | 'ficha_empresa';
 
 export default function App() {
   const [items, setItems] = useState<NormaPhvaItem[]>([]);
   const [activeTab, setActiveTab] = useState<TabView>('phva_slides');
+  const [presentationConfig, setPresentationConfig] = useState<ConfiguracionPresentacion>(() => getPresentationConfig());
+  const [isGlobalPresEditorOpen, setIsGlobalPresEditorOpen] = useState(false);
+  const [presEditorInitialTab, setPresEditorInitialTab] = useState<'banner' | 'fases' | 'modulos' | 'guia'>('banner');
+  const [watermarkIntensity, setWatermarkIntensity] = useState<WatermarkIntensity>('corporativa');
   const [selectedNorma, setSelectedNorma] = useState<NormaPhvaItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalInitialEdit, setModalInitialEdit] = useState(false);
@@ -154,6 +172,16 @@ export default function App() {
     }
   }, [selectedNorma]);
 
+  const handleUpdatePresentationConfig = useCallback((updated: ConfiguracionPresentacion) => {
+    savePresentationConfig(updated);
+    setPresentationConfig(updated);
+  }, []);
+
+  const handleResetPresentationConfig = useCallback(() => {
+    const reset = resetPresentationConfig();
+    setPresentationConfig(reset);
+  }, []);
+
   const handleOpenNorma = (norma: NormaPhvaItem, editMode: boolean = false) => {
     setSelectedNorma(norma);
     setModalInitialEdit(editMode);
@@ -175,11 +203,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col antialiased text-[#0f172a]">
+    <div className="min-h-screen bg-slate-100 flex flex-col antialiased text-[#0f172a] relative">
       {/* TOP HEADER: Paleta Azul Oscuro (#0f172a) con bordes Naranja Claro (#f97316) */}
       <header className="sticky top-0 z-40 bg-[#0f172a] text-white border-b-2 border-[#f97316] shadow-md print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Logo & Corporate Title */}
+          {/* Logo & Corporate Title (EDITABLE) */}
           <div className="flex items-center gap-3">
             <img
               src="/frikaz_logo.jpg"
@@ -189,23 +217,35 @@ export default function App() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-base sm:text-lg font-black tracking-tight text-white">
-                  FRIKAZ S.A.S.
+                  {presentationConfig.appHeader?.empresa || 'FRIKAZ S.A.S.'}
                 </span>
                 <span className="rounded-md bg-[#fed7aa] px-2 py-0.5 text-[10px] font-black uppercase text-[#0f172a]">
-                  Bosa · 10 Trab.
+                  {presentationConfig.appHeader?.badge || 'Bosa · 10 Trab.'}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPresEditorInitialTab('banner');
+                    setIsGlobalPresEditorOpen(true);
+                  }}
+                  className="p-1 rounded-md text-orange-200/70 hover:text-white hover:bg-white/10 transition-colors"
+                  title="Editar textos del encabezado superior"
+                >
+                  <Edit3 className="h-3.5 w-3.5" />
+                </button>
               </div>
               <p className="text-xs text-orange-200 font-medium leading-none mt-0.5">
-                Evidencia 1 — Herramienta Automatizada SST y Ambiental (PHVA)
+                {presentationConfig.appHeader?.subtitulo ||
+                  'Evidencia 1 — Herramienta Automatizada SST y Ambiental (PHVA)'}
               </p>
             </div>
           </div>
 
           {/* Navigation Tabs Desktop */}
-          <nav className="hidden md:flex items-center gap-1.5">
+          <nav className="hidden md:flex items-center gap-2">
             <button
               onClick={() => setActiveTab('phva_slides')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
                 activeTab === 'phva_slides'
                   ? 'bg-[#f97316] text-white shadow-xs'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
@@ -217,7 +257,7 @@ export default function App() {
 
             <button
               onClick={() => setActiveTab('matriz_tabla')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
                 activeTab === 'matriz_tabla'
                   ? 'bg-[#f97316] text-white shadow-xs'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
@@ -227,9 +267,23 @@ export default function App() {
               <span>Matriz Normativa Completa</span>
             </button>
 
+            {/* BOTÓN MATRIZ EXCEL AUTOMATIZADA */}
+            <button
+              onClick={() => setActiveTab('matriz_excel')}
+              className={`px-3 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                activeTab === 'matriz_excel'
+                  ? 'bg-emerald-600 text-white border border-emerald-400 shadow-md'
+                  : 'text-emerald-300 hover:text-white hover:bg-emerald-950/80 border border-emerald-500/40'
+              }`}
+              title="Abrir módulo oficial: Matriz Excel Automatizada (.xlsx con fórmulas y 6 hojas)"
+            >
+              <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+              <span>Matriz Excel Automatizada</span>
+            </button>
+
             <button
               onClick={() => setActiveTab('ficha_empresa')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
                 activeTab === 'ficha_empresa'
                   ? 'bg-[#f97316] text-white shadow-xs'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
@@ -239,10 +293,40 @@ export default function App() {
               <span>Ficha Frikaz S.A.S.</span>
             </button>
 
+            {/* BOTÓN PRINCIPAL DE EDICIÓN TOTAL DE TEXTOS Y ENCABEZADOS */}
+            <button
+              type="button"
+              onClick={() => {
+                setPresEditorInitialTab('banner');
+                setIsGlobalPresEditorOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-linear-to-r from-[#ea580c] to-[#f97316] text-white text-xs font-black hover:brightness-110 shadow-md border border-orange-300/40 transition-all cursor-pointer ml-1"
+              title="Editar todos los títulos, encabezados, fases y descripciones"
+            >
+              <Edit3 className="h-3.5 w-3.5" />
+              <span>Editar Todo</span>
+            </button>
           </nav>
 
-          {/* Cumplimiento General Counter */}
+          {/* Watermark Selector & Cumplimiento General Counter */}
           <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-slate-800">
+            {/* Watermark Selector */}
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-700 text-[11px]">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+              <span className="text-slate-400 font-bold">Marca Agua:</span>
+              <select
+                value={watermarkIntensity}
+                onChange={(e) => setWatermarkIntensity(e.target.value as WatermarkIntensity)}
+                className="bg-transparent text-[#fed7aa] font-bold text-[11px] focus:outline-hidden cursor-pointer"
+                title="Ajustar visibilidad de la marca de agua corporativa oficial"
+              >
+                <option value="corporativa" className="bg-[#0f172a] text-white">Corporativa (Oficial)</option>
+                <option value="fuerte" className="bg-[#0f172a] text-white">Visible (Fuerte)</option>
+                <option value="sutil" className="bg-[#0f172a] text-white">Sutil</option>
+                <option value="desactivada" className="bg-[#0f172a] text-white">Ocultar</option>
+              </select>
+            </div>
+
             <div className="text-right">
               <span className="text-[10px] text-slate-400 uppercase font-bold block">
                 Cumplimiento General
@@ -285,6 +369,16 @@ export default function App() {
             </button>
             <button
               onClick={() => {
+                setActiveTab('matriz_excel');
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-emerald-300 hover:bg-slate-800 flex items-center gap-2"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>Matriz Excel Automatizada (.xlsx)</span>
+            </button>
+            <button
+              onClick={() => {
                 setActiveTab('ficha_empresa');
                 setMobileMenuOpen(false);
               }}
@@ -303,11 +397,15 @@ export default function App() {
           <PhvaSlideViewer
             items={items}
             indicadores={indicadores}
+            presentationConfig={presentationConfig}
+            onUpdatePresentationConfig={handleUpdatePresentationConfig}
+            onResetPresentationConfig={handleResetPresentationConfig}
             onSelectNorma={(norma) => handleOpenNorma(norma, false)}
             onEditNorma={(norma) => handleOpenNorma(norma, true)}
             onUpdateStatus={handleUpdateStatus}
             onReset={handleReset}
             onAddNewNorma={handleAddNewNorma}
+            onOpenMatrizExcel={() => setActiveTab('matriz_excel')}
           />
         )}
 
@@ -316,15 +414,42 @@ export default function App() {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
               <div>
-                <h2 className="text-lg font-bold text-[#0f172a]">
-                  Matriz Normativa Completa de Requisitos Legales
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Total de {items.length} disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S. (haga clic en Editar para modificar).
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-[#0f172a]">
+                    {presentationConfig.matrizTabla?.titulo ||
+                      'Matriz Normativa Completa de Requisitos Legales'}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPresEditorInitialTab('guia');
+                      setIsGlobalPresEditorOpen(true);
+                    }}
+                    className="p-1 rounded text-slate-400 hover:text-[#f97316] hover:bg-orange-50 transition-colors"
+                    title="Editar título y descripción de la matriz"
+                  >
+                    <Edit3 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {presentationConfig.matrizTabla?.descripcion ||
+                    `Total de ${items.length} disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S. (haga clic en Editar para modificar).`}
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPresEditorInitialTab('guia');
+                    setIsGlobalPresEditorOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 text-xs font-bold transition-colors border border-slate-300"
+                  title="Editar textos de la matriz"
+                >
+                  <Edit3 className="h-3.5 w-3.5 text-[#f97316]" />
+                  <span>Editar Textos</span>
+                </button>
                 <button
                   onClick={() => handleAddNewNorma('PLANEAR')}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-[#f97316] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#ea580c] transition-colors shadow-xs"
@@ -692,7 +817,21 @@ export default function App() {
           </div>
         )}
 
+        {/* VIEW 4: MATRIZ EXCEL AUTOMATIZADA (.XLSX CON FÓRMULAS, 6 HOJAS Y DESCARGA REAL) */}
+        {activeTab === 'matriz_excel' && (
+          <MatrizExcelView
+            items={items}
+            onSelectNorma={(norma) => handleOpenNorma(norma, false)}
+          />
+        )}
       </main>
+
+      {/* CORPORATE WATERMARK LAYER */}
+      <CorporateWatermark
+        intensity={watermarkIntensity}
+        showControlBadge={true}
+        onIntensityChange={setWatermarkIntensity}
+      />
 
       {/* MODAL WITH THE 6 MANDATORY CIRCLES FROM SLIDE 5 (CON EDICIÓN COMPLETA) */}
       <NormaCirculosModal
@@ -703,6 +842,16 @@ export default function App() {
         onUpdateStatus={handleUpdateStatus}
         onSaveNorma={handleSaveNorma}
         onDeleteNorma={handleDeleteNorma}
+      />
+
+      {/* MODAL DE EDICIÓN DE TODA LA PRESENTACIÓN Y ENCABEZADOS */}
+      <PresentacionEditorModal
+        isOpen={isGlobalPresEditorOpen}
+        config={presentationConfig}
+        initialTab={presEditorInitialTab}
+        onClose={() => setIsGlobalPresEditorOpen(false)}
+        onSave={handleUpdatePresentationConfig}
+        onReset={handleResetPresentationConfig}
       />
     </div>
   );

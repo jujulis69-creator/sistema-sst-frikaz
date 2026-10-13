@@ -7,7 +7,7 @@ import {
 } from '../types/phvaEvidence';
 import { INITIAL_PHVA_NORMS } from '../data/phvaNormsData';
 
-const STORAGE_KEY = 'frikaz_phva_evidence_items_v2';
+const STORAGE_KEY = 'frikaz_phva_evidence_items_v3_74normas';
 
 export function getPhvaNorms(): NormaPhvaItem[] {
   try {
@@ -16,7 +16,14 @@ export function getPhvaNorms(): NormaPhvaItem[] {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PHVA_NORMS));
       return INITIAL_PHVA_NORMS;
     }
-    return JSON.parse(raw) as NormaPhvaItem[];
+    const parsed = JSON.parse(raw) as NormaPhvaItem[];
+    if (parsed.length < INITIAL_PHVA_NORMS.length) {
+      const map = new Map(parsed.map((it) => [it.id, it]));
+      const merged = INITIAL_PHVA_NORMS.map((def) => map.get(def.id) || def);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      return merged;
+    }
+    return parsed;
   } catch (err) {
     console.error('Error reading phva norms from localStorage', err);
     return INITIAL_PHVA_NORMS;
@@ -101,9 +108,14 @@ export function calcularIndicadoresPhva(items: NormaPhvaItem[]): IndicadoresAuto
     const parciales = faseItems.filter((i) => i.estado === 'PARCIAL').length;
     const noCumplidas = faseItems.filter((i) => i.estado === 'NO_CUMPLE').length;
     const total = faseItems.length;
+    const totalEvaluables = faseItems.filter(
+      (i) => i.estado !== 'NO_APLICA' && i.estado !== 'PENDIENTE'
+    ).length;
 
     const porcentaje =
-      total > 0 ? Math.round(((cumplidas + parciales * 0.5) / total) * 1000) / 10 : 0;
+      totalEvaluables > 0
+        ? Math.round(((cumplidas + parciales * 0.5) / totalEvaluables) * 1000) / 10
+        : 0;
 
     porFase[fase] = {
       total,
@@ -119,6 +131,9 @@ export function calcularIndicadoresPhva(items: NormaPhvaItem[]): IndicadoresAuto
   });
 
   items.forEach((item) => {
+    if (item.estado === 'NO_APLICA' || item.estado === 'PENDIENTE') {
+      return;
+    }
     const pts = item.estado === 'CUMPLE' ? 1.0 : item.estado === 'PARCIAL' ? 0.5 : 0;
     if (item.area === 'SST' || item.area === 'INTEGRAL') {
       sstPuntos += pts;
@@ -130,9 +145,15 @@ export function calcularIndicadoresPhva(items: NormaPhvaItem[]): IndicadoresAuto
     }
   });
 
+  const totalEvaluablesGeneral = items.filter(
+    (i) => i.estado !== 'NO_APLICA' && i.estado !== 'PENDIENTE'
+  ).length;
+
   const generalPorcentaje =
-    items.length > 0
-      ? Math.round(((totalCumplidas + totalParciales * 0.5) / items.length) * 1000) / 10
+    totalEvaluablesGeneral > 0
+      ? Math.round(
+          ((totalCumplidas + totalParciales * 0.5) / totalEvaluablesGeneral) * 1000
+        ) / 10
       : 0;
 
   const sstPorcentaje =

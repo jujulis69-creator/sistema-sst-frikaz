@@ -12,6 +12,7 @@ export function getPresentationConfig(): ConfiguracionPresentacion {
       const parsed = JSON.parse(raw);
       // Ensure merged with default in case of missing keys
       return {
+        appHeader: { ...CONFIG_PRESENTACION_DEFAULT.appHeader, ...(parsed.appHeader || {}) },
         banner: { ...CONFIG_PRESENTACION_DEFAULT.banner, ...(parsed.banner || {}) },
         fases: {
           PLANEAR: {
@@ -34,6 +35,10 @@ export function getPresentationConfig(): ConfiguracionPresentacion {
         guiaDocente: {
           ...CONFIG_PRESENTACION_DEFAULT.guiaDocente,
           ...(parsed.guiaDocente || {}),
+        },
+        matrizTabla: {
+          ...CONFIG_PRESENTACION_DEFAULT.matrizTabla,
+          ...(parsed.matrizTabla || {}),
         },
       };
     }

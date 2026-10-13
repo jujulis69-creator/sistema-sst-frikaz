@@ -10,6 +10,7 @@ import {
 } from './types/presentationConfig';
 import {
   getPhvaNorms,
+  savePhvaNorms,
   updatePhvaNormStatus,
   updatePhvaNormFull,
   deletePhvaNorm,
@@ -25,6 +26,7 @@ import { PhvaSlideViewer } from './components/PhvaSlideViewer';
 import { NormaCirculosModal } from './components/NormaCirculosModal';
 import { PresentacionEditorModal } from './components/PresentacionEditorModal';
 import { MatrizExcelView } from './components/MatrizExcelView';
+import { ConfiguracionDinamicaEmpresaView } from './components/ConfiguracionDinamicaEmpresaView';
 import {
   ShieldCheck,
   Leaf,
@@ -43,6 +45,7 @@ import {
   Search,
   Sparkles,
   FileSpreadsheet,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 type TabView = 'phva_slides' | 'matriz_tabla' | 'matriz_excel' | 'ficha_empresa';
@@ -59,29 +62,6 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchTermMatriz, setSearchTermMatriz] = useState('');
   const [areaFilterMatriz, setAreaFilterMatriz] = useState<'TODAS' | 'SST' | 'AMBIENTAL'>('TODAS');
-  const [isEditingEmpresa, setIsEditingEmpresa] = useState(false);
-  const [empresa, setEmpresa] = useState(() => {
-    const saved = localStorage.getItem('frikaz_empresa_perfil_v2');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        // fallback
-      }
-    }
-    return {
-      razonSocial: 'Frikaz S.A.S.',
-      nit: '901.654.892-3',
-      direccion: 'Calle 69A Sur # 80J - 14, Piamonte, Bosa',
-      trabajadores: 10,
-      claseRiesgo: 'Clase II / III',
-      autoridadAmbiental: 'Secretaría Distrital de Ambiente (SDA)',
-      maquinaria:
-        'Freidoras industriales por inmersión continua con termostato digital (>160°C).\nRebanadora/cortadora rotativa de papas y plátanos con cuchillas mecánicas.\nPeladora abrasiva mecánica con suministro continuo de agua.\nMarmita en acero inoxidable para escaldado de chicharrón.\nSelladora continua de banda térmica con fechador para bolsas BOPP.\nCampana extractora de humos y ducto vertical sobre cubierta.\nTrampa física de retención de grasas en red de desagüe.',
-      residuos:
-        'Aceite de Cocina Usado (ACU): 180 a 250 L/mes (Res. 316/2018).\nOrgánicos verdes: Cáscaras de papa y plátano (aprovechables).\nReciclables blancos: Cartón corrugado y recortes de bolsas BOPP.\nVertimientos no domésticos: Aguas con grasa retenidas en trampa.',
-    };
-  });
 
   // Load from local storage on mount
   useEffect(() => {
@@ -149,13 +129,6 @@ export default function App() {
     setModalInitialEdit(true);
     setIsModalOpen(true);
   }, []);
-
-  const handleSaveEmpresa = (e: React.FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem('frikaz_empresa_perfil_v2', JSON.stringify(empresa));
-    setIsEditingEmpresa(false);
-    alert('¡Datos de Frikaz S.A.S. guardados exitosamente!');
-  };
 
   // Handle status update (Automatización)
   const handleUpdateStatus = useCallback((id: string, newStatus: EstadoCumplimiento) => {
@@ -276,8 +249,8 @@ export default function App() {
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <Building2 className="h-4 w-4" />
-              <span>Ficha Frikaz S.A.S.</span>
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Configuración Dinámica de la Empresa</span>
             </button>
           </nav>
 
@@ -338,9 +311,10 @@ export default function App() {
                 setActiveTab('ficha_empresa');
                 setMobileMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-white hover:bg-slate-800"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-white hover:bg-slate-800 flex items-center gap-2"
             >
-              Ficha Frikaz S.A.S.
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Configuración Dinámica de la Empresa</span>
             </button>
           </div>
         )}
@@ -537,217 +511,18 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 3: FICHA EMPRESARIAL FRIKAZ S.A.S. (EDITABLE) */}
+        {/* VIEW 3: CONFIGURACIÓN DINÁMICA DE LA EMPRESA (MOTOR DE REGLAS INTERACTIVO) */}
         {activeTab === 'ficha_empresa' && (
-          <div className="space-y-6 max-w-4xl">
-            <div className="rounded-2xl border border-slate-800 bg-[#0f172a] p-6 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-              <div className="flex items-center gap-4">
-                <img
-                  src="/frikaz_logo.jpg"
-                  alt="Logo Frikaz"
-                  className="h-20 w-auto max-w-[140px] object-contain rounded-xl border border-orange-200/50 bg-white p-1 shadow-md shrink-0"
-                />
-                <div>
-                  <span className="rounded-md bg-[#fed7aa] px-2.5 py-0.5 text-xs font-black uppercase text-[#0f172a]">
-                    Perfil Oficial Editable
-                  </span>
-                  <h2 className="text-2xl font-black mt-1 text-white">
-                    {empresa.razonSocial} — Snacks Fritos
-                  </h2>
-                  <p className="text-xs text-slate-300 mt-1">
-                    {empresa.direccion} · {empresa.trabajadores} Trabajadores directos
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsEditingEmpresa(!isEditingEmpresa)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#f97316] text-white text-xs font-bold hover:bg-[#ea580c] transition-colors shadow-xs shrink-0"
-              >
-                <Edit3 className="h-4 w-4" />
-                <span>{isEditingEmpresa ? 'Ver Resumen' : 'Editar Información'}</span>
-              </button>
-            </div>
-
-            {isEditingEmpresa ? (
-              <form onSubmit={handleSaveEmpresa} className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-4 text-xs">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                  <h3 className="font-bold text-sm text-[#0f172a]">
-                    Editar Datos Generales de Frikaz S.A.S.
-                  </h3>
-                  <span className="text-slate-500">
-                    Cambie los valores y presione Guardar
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Razón Social:</label>
-                    <input
-                      type="text"
-                      value={empresa.razonSocial}
-                      onChange={(e) => setEmpresa({ ...empresa, razonSocial: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">NIT:</label>
-                    <input
-                      type="text"
-                      value={empresa.nit}
-                      onChange={(e) => setEmpresa({ ...empresa, nit: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Ubicación de Planta:</label>
-                    <input
-                      type="text"
-                      value={empresa.direccion}
-                      onChange={(e) => setEmpresa({ ...empresa, direccion: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Número de Trabajadores:</label>
-                    <input
-                      type="number"
-                      value={empresa.trabajadores}
-                      onChange={(e) => setEmpresa({ ...empresa, trabajadores: Number(e.target.value) })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Clase de Riesgo ARL:</label>
-                    <input
-                      type="text"
-                      value={empresa.claseRiesgo}
-                      onChange={(e) => setEmpresa({ ...empresa, claseRiesgo: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Autoridad Ambiental:</label>
-                    <input
-                      type="text"
-                      value={empresa.autoridadAmbiental}
-                      onChange={(e) => setEmpresa({ ...empresa, autoridadAmbiental: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">
-                      Maquinaria Utilizada (una por línea):
-                    </label>
-                    <textarea
-                      rows={5}
-                      value={empresa.maquinaria}
-                      onChange={(e) => setEmpresa({ ...empresa, maquinaria: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">
-                      Residuos Principales Generados (una por línea):
-                    </label>
-                    <textarea
-                      rows={5}
-                      value={empresa.residuos}
-                      onChange={(e) => setEmpresa({ ...empresa, residuos: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 p-2 text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
-                  <button
-                    type="button"
-                    onClick={() => setIsEditingEmpresa(false)}
-                    className="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 text-xs font-bold"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-[#0f172a] text-white text-xs font-bold hover:bg-slate-800"
-                  >
-                    <Save className="h-4 w-4 text-[#fed7aa]" />
-                    <span>Guardar Perfil Empresarial</span>
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <>
-                <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-4 text-xs">
-                  <h3 className="font-bold text-sm text-[#0f172a] border-b border-slate-100 pb-2">
-                    1. Información General y Ubicación
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <span className="text-slate-500 font-medium block">Razón Social:</span>
-                      <strong className="text-slate-900 text-sm">{empresa.razonSocial}</strong>
-                    </div>
-                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <span className="text-slate-500 font-medium block">NIT:</span>
-                      <strong className="text-slate-900 text-sm">{empresa.nit}</strong>
-                    </div>
-                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <span className="text-slate-500 font-medium block">Ubicación de Planta:</span>
-                      <strong className="text-slate-900">{empresa.direccion}</strong>
-                    </div>
-                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <span className="text-slate-500 font-medium block">Número de Trabajadores:</span>
-                      <strong className="text-slate-900 font-mono text-sm">{empresa.trabajadores} Trabajadores</strong>
-                    </div>
-                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <span className="text-slate-500 font-medium block">Clase de Riesgo ARL:</span>
-                      <strong className="text-[#991b1b] text-sm">{empresa.claseRiesgo}</strong>
-                    </div>
-                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <span className="text-slate-500 font-medium block">Autoridad Ambiental:</span>
-                      <strong className="text-emerald-800">{empresa.autoridadAmbiental}</strong>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-4 text-xs">
-                  <h3 className="font-bold text-sm text-[#0f172a] border-b border-slate-100 pb-2">
-                    2. Maquinaria y Procesos Productivos de la Planta
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-slate-800">Maquinaria Utilizada:</h4>
-                      <div className="space-y-1 text-slate-600 whitespace-pre-line">
-                        {empresa.maquinaria}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-slate-800">Residuos Principales Generados:</h4>
-                      <div className="space-y-1 text-slate-600 whitespace-pre-line">
-                        {empresa.residuos}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          <ConfiguracionDinamicaEmpresaView
+            normas={items}
+            indicadores={indicadores}
+            onActualizarNormas={(nuevasNormas) => {
+              setItems(nuevasNormas);
+              savePhvaNorms(nuevasNormas);
+            }}
+            onOpenNormaModal={(norma) => handleOpenNorma(norma, false)}
+            onOpenMatrizExcel={() => setActiveTab('matriz_excel')}
+          />
         )}
 
         {/* VIEW 4: MATRIZ EXCEL AUTOMATIZADA (.XLSX CON FÓRMULAS, 6 HOJAS Y DESCARGA REAL) */}

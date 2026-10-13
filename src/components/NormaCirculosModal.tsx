@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   Clock,
-  Edit3,
   Save,
   RotateCcw,
   Trash2,
@@ -134,7 +133,6 @@ export const NormaCirculosModal: React.FC<NormaCirculosModalProps> = ({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#f97316] text-white text-xs font-bold hover:bg-[#ea580c] transition-colors shadow-xs"
                 title="Habilitar edición de los 6 círculos y campos de la norma"
               >
-                <Edit3 className="h-3.5 w-3.5" />
                 <span>Editar Norma</span>
               </button>
             ) : (
@@ -176,7 +174,7 @@ export const NormaCirculosModal: React.FC<NormaCirculosModalProps> = ({
           {/* Subtitle from the Teacher's Presentation (Slide 5) */}
           <div className="text-center pb-2 border-b border-slate-200">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#991b1b]">
-              EVIDENCIA 1 — EVALUACIÓN NORMATIVA AUTOMATIZADA
+              SISTEMA DE GESTIÓN — EVALUACIÓN NORMATIVA AUTOMATIZADA
             </span>
             <h4 className="text-sm font-semibold text-slate-600 mt-0.5">
               Identificar la Normativa para cada Fase (Requisitos Oficiales de la Presentación)
@@ -761,7 +759,6 @@ export const NormaCirculosModal: React.FC<NormaCirculosModalProps> = ({
               onClick={() => setIsEditing(true)}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#f97316] text-white text-xs font-bold hover:bg-[#ea580c] transition-colors shadow-xs"
             >
-              <Edit3 className="h-3.5 w-3.5" />
               <span>Editar los 6 Círculos de esta Norma</span>
             </button>
           ) : (

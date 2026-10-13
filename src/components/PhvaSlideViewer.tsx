@@ -9,7 +9,6 @@ import {
   ConfiguracionPresentacion,
   CONFIG_PRESENTACION_DEFAULT,
 } from '../types/presentationConfig';
-import { PresentacionEditorModal } from './PresentacionEditorModal';
 import {
   ShieldCheck,
   Leaf,
@@ -23,7 +22,6 @@ import {
   Award,
   Sparkles,
   Plus,
-  Edit3,
   SlidersHorizontal,
   FileSpreadsheet,
 } from 'lucide-react';
@@ -58,8 +56,6 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
   const [activeFase, setActiveFase] = useState<FasePhva>('PLANEAR');
   const [searchTerm, setSearchTerm] = useState('');
   const [areaFilter, setAreaFilter] = useState<'TODAS' | 'SST' | 'AMBIENTAL'>('TODAS');
-  const [isPresEditorOpen, setIsPresEditorOpen] = useState(false);
-  const [presEditorTab, setPresEditorTab] = useState<'banner' | 'fases' | 'modulos' | 'guia'>('banner');
 
   // Groups items for current phase
   const faseItems = useMemo(() => {
@@ -137,78 +133,20 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
                 <span className="text-xs text-slate-300 font-medium">
                   {presentationConfig.banner.empresaInfo}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPresEditorTab('banner');
-                    setIsPresEditorOpen(true);
-                  }}
-                  className="p-1 rounded-md text-orange-200/70 hover:text-white hover:bg-white/10 transition-colors"
-                  title="Editar etiquetas y contexto del banner"
-                >
-                  <Edit3 className="h-3 w-3" />
-                </button>
               </div>
 
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-xs">
-                  {presentationConfig.banner.titulo}
-                </h1>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPresEditorTab('banner');
-                    setIsPresEditorOpen(true);
-                  }}
-                  className="p-1.5 rounded-lg bg-white/10 text-orange-200 hover:text-white hover:bg-white/20 transition-colors shrink-0"
-                  title="Editar título principal y descripción"
-                >
-                  <Edit3 className="h-4 w-4" />
-                </button>
-              </div>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-xs">
+                {presentationConfig.banner.titulo}
+              </h1>
 
-              <div className="flex items-start gap-2">
-                <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-                  {presentationConfig.banner.descripcion}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPresEditorTab('banner');
-                    setIsPresEditorOpen(true);
-                  }}
-                  className="p-1 rounded text-slate-400 hover:text-orange-200 shrink-0"
-                  title="Editar descripción del banner"
-                >
-                  <Edit3 className="h-3 w-3" />
-                </button>
-              </div>
-
-              {/* Watermark badge inside banner */}
-              <div className="pt-1 flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-white/10 border border-white/15 text-[10px] font-bold text-orange-100">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                  <span>MARCA DE AGUA CORPORATIVA: SG-SST OFICIAL</span>
-                </span>
-              </div>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                {presentationConfig.banner.descripcion}
+              </p>
             </div>
           </div>
 
-          {/* Quick Actions & Botón de Edición de Presentación */}
+          {/* Quick Actions */}
           <div className="flex flex-wrap items-center gap-2 shrink-0 print:hidden">
-            <button
-              type="button"
-              onClick={() => {
-                setPresEditorTab('banner');
-                setIsPresEditorOpen(true);
-              }}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-[#ea580c] to-[#f97316] px-3.5 py-2 text-xs font-black text-white hover:brightness-110 transition-all shadow-md border border-orange-300/30 cursor-pointer"
-              title="Editar todos los encabezados, descripciones, fases y módulos de la presentación"
-            >
-              <Edit3 className="h-4 w-4" />
-              <span>Editar Toda la Presentación</span>
-            </button>
-
             {onOpenMatrizExcel && (
               <button
                 type="button"
@@ -244,7 +182,7 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
         </div>
 
         {/* AUTOMATED METRICS BAR */}
-        <div className="mt-6 pt-5 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
+        <div className="mt-6 pt-5 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-xs">
           {/* 1. Cumplimiento General */}
           <div className="rounded-xl bg-slate-900/80 p-3 border border-slate-800">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
@@ -327,22 +265,6 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
             </div>
             <span className="text-[10px] text-slate-400 block mt-1">
               {currentFaseResumen.cumplidas} de {currentFaseResumen.total} cumplidas
-            </span>
-          </div>
-
-          {/* 6. Alertas / Brechas */}
-          <div className="rounded-xl bg-slate-900/80 p-3 border border-slate-800">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-red-400 block">
-              Acciones / Brechas
-            </span>
-            <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-2xl font-black text-[#991b1b] font-mono tabular-nums">
-                {indicadores.alertasPendientes}
-              </span>
-              <span className="text-[10px] text-red-300">pendientes</span>
-            </div>
-            <span className="text-[10px] text-slate-400 block mt-1">
-              Requieren atención
             </span>
           </div>
         </div>
@@ -433,17 +355,6 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
               <h2 className="text-lg font-extrabold text-[#0f172a] tracking-tight">
                 {presentationConfig.fases[activeFase].tituloFase}
               </h2>
-              <button
-                type="button"
-                onClick={() => {
-                  setPresEditorTab('fases');
-                  setIsPresEditorOpen(true);
-                }}
-                className="p-1 rounded-md text-slate-400 hover:text-[#f97316] hover:bg-orange-50 transition-colors"
-                title="Editar título y subtítulo de esta fase"
-              >
-                <Edit3 className="h-3.5 w-3.5" />
-              </button>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               {presentationConfig.fases[activeFase].subtituloFase}
@@ -454,20 +365,8 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
           </span>
         </div>
 
-        {/* Container with subtle corporate watermark stamp */}
-        <div className="relative">
-          {/* Subtle Watermark Stamp */}
-          <div className="absolute right-4 bottom-4 pointer-events-none select-none opacity-[0.05] hidden lg:flex items-center gap-3 z-0">
-            <ShieldCheck className="h-32 w-32 text-[#0f172a]" />
-            <div>
-              <div className="text-xl font-black uppercase text-[#0f172a]">FRIKAZ S.A.S.</div>
-              <div className="text-xs font-bold text-[#0f172a]">FASE {activeFase} · SG-SST OFICIAL</div>
-              <div className="text-[10px] font-mono text-[#0f172a]">SUIN-JURISCOL · DEC 1072/2015</div>
-            </div>
-          </div>
-
-          {/* 4 Quadrants/Columns representing the 4 slide sections */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+        {/* 4 Quadrants/Columns representing the 4 slide sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {presentationConfig.fases[activeFase].modulos.map((sub, idx) => {
             const subItems = faseItems.filter((i) => i.subtema === sub.subtema);
 
@@ -485,17 +384,6 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
                       <span className="text-[10px] font-mono font-bold text-slate-500">
                         {subItems.length} norma(s)
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPresEditorTab('modulos');
-                          setIsPresEditorOpen(true);
-                        }}
-                        className="text-slate-400 hover:text-[#f97316] p-0.5 rounded hover:bg-orange-50 transition-colors"
-                        title="Editar título o descripción de este módulo"
-                      >
-                        <Edit3 className="h-3 w-3" />
-                      </button>
                     </div>
                   </div>
 
@@ -584,27 +472,11 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
                           <div className="flex items-center gap-1.5 shrink-0">
                             <button
                               type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (onEditNorma) {
-                                  onEditNorma(item);
-                                } else {
-                                  onSelectNorma(item);
-                                }
-                              }}
-                              className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded bg-[#fff7ed] hover:bg-[#ffedd5] text-[#ea580c] border border-orange-200 font-bold text-[10px] cursor-pointer transition-colors shadow-2xs"
-                              title="Editar todos los campos de esta norma (Descripción, Importancia, Aplicabilidad, etc.)"
-                            >
-                              <Edit3 className="h-2.5 w-2.5" />
-                              <span>Editar</span>
-                            </button>
-                            <button
-                              type="button"
                               onClick={() => onSelectNorma(item)}
                               className="text-slate-600 hover:text-[#0f172a] font-bold hover:underline flex items-center gap-0.5 cursor-pointer text-[10px]"
                               title="Ver los 6 círculos obligatorios de la evidencia"
                             >
-                              <span>Ver</span> <Eye className="h-2.5 w-2.5 ml-0.5" />
+                              <span>Ver detalles</span> <Eye className="h-2.5 w-2.5 ml-0.5" />
                             </button>
                           </div>
                         </div>
@@ -622,7 +494,6 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
           })}
         </div>
       </div>
-    </div>
 
       {/* TEACHER SLIDE 5 PROMPT REMINDER INLINE */}
       <div className="rounded-xl border border-orange-200 bg-[#fff7ed] p-5 shadow-xs text-slate-800 text-xs">
@@ -635,18 +506,6 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
               <h4 className="font-bold text-sm text-orange-950">
                 {presentationConfig.guiaDocente.titulo}
               </h4>
-              <button
-                type="button"
-                onClick={() => {
-                  setPresEditorTab('guia');
-                  setIsPresEditorOpen(true);
-                }}
-                className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-700 hover:text-orange-950 bg-orange-100/70 hover:bg-orange-200/70 px-2 py-0.5 rounded transition-colors"
-                title="Editar texto de la guía pedagógica"
-              >
-                <Edit3 className="h-3 w-3" />
-                <span>Editar Guía</span>
-              </button>
             </div>
             <p className="text-orange-900 leading-relaxed whitespace-pre-line">
               {presentationConfig.guiaDocente.descripcion}
@@ -654,25 +513,6 @@ export const PhvaSlideViewer: React.FC<PhvaSlideViewerProps> = ({
           </div>
         </div>
       </div>
-
-      {/* MODAL DE EDICIÓN DE TODA LA PRESENTACIÓN */}
-      <PresentacionEditorModal
-        isOpen={isPresEditorOpen}
-        config={presentationConfig}
-        initialTab={presEditorTab}
-        activeFaseDefault={activeFase}
-        onClose={() => setIsPresEditorOpen(false)}
-        onSave={(updated) => {
-          if (onUpdatePresentationConfig) {
-            onUpdatePresentationConfig(updated);
-          }
-        }}
-        onReset={() => {
-          if (onResetPresentationConfig) {
-            onResetPresentationConfig();
-          }
-        }}
-      />
     </div>
   );
 };

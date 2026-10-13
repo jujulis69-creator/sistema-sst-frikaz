@@ -24,7 +24,6 @@ import {
 import { PhvaSlideViewer } from './components/PhvaSlideViewer';
 import { NormaCirculosModal } from './components/NormaCirculosModal';
 import { PresentacionEditorModal } from './components/PresentacionEditorModal';
-import { CorporateWatermark, WatermarkIntensity } from './components/CorporateWatermark';
 import { MatrizExcelView } from './components/MatrizExcelView';
 import {
   ShieldCheck,
@@ -54,7 +53,6 @@ export default function App() {
   const [presentationConfig, setPresentationConfig] = useState<ConfiguracionPresentacion>(() => getPresentationConfig());
   const [isGlobalPresEditorOpen, setIsGlobalPresEditorOpen] = useState(false);
   const [presEditorInitialTab, setPresEditorInitialTab] = useState<'banner' | 'fases' | 'modulos' | 'guia'>('banner');
-  const [watermarkIntensity, setWatermarkIntensity] = useState<WatermarkIntensity>('corporativa');
   const [selectedNorma, setSelectedNorma] = useState<NormaPhvaItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalInitialEdit, setModalInitialEdit] = useState(false);
@@ -222,21 +220,10 @@ export default function App() {
                 <span className="rounded-md bg-[#fed7aa] px-2 py-0.5 text-[10px] font-black uppercase text-[#0f172a]">
                   {presentationConfig.appHeader?.badge || 'Bosa · 10 Trab.'}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPresEditorInitialTab('banner');
-                    setIsGlobalPresEditorOpen(true);
-                  }}
-                  className="p-1 rounded-md text-orange-200/70 hover:text-white hover:bg-white/10 transition-colors"
-                  title="Editar textos del encabezado superior"
-                >
-                  <Edit3 className="h-3.5 w-3.5" />
-                </button>
               </div>
               <p className="text-xs text-orange-200 font-medium leading-none mt-0.5">
                 {presentationConfig.appHeader?.subtitulo ||
-                  'Evidencia 1 — Herramienta Automatizada SST y Ambiental (PHVA)'}
+                  'Herramienta Automatizada SST y Ambiental (PHVA)'}
               </p>
             </div>
           </div>
@@ -252,7 +239,7 @@ export default function App() {
               }`}
             >
               <Award className="h-4 w-4" />
-              <span>Ciclo PHVA (Diapositivas)</span>
+              <span>Ciclo PHVA</span>
             </button>
 
             <button
@@ -292,41 +279,10 @@ export default function App() {
               <Building2 className="h-4 w-4" />
               <span>Ficha Frikaz S.A.S.</span>
             </button>
-
-            {/* BOTÓN PRINCIPAL DE EDICIÓN TOTAL DE TEXTOS Y ENCABEZADOS */}
-            <button
-              type="button"
-              onClick={() => {
-                setPresEditorInitialTab('banner');
-                setIsGlobalPresEditorOpen(true);
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-linear-to-r from-[#ea580c] to-[#f97316] text-white text-xs font-black hover:brightness-110 shadow-md border border-orange-300/40 transition-all cursor-pointer ml-1"
-              title="Editar todos los títulos, encabezados, fases y descripciones"
-            >
-              <Edit3 className="h-3.5 w-3.5" />
-              <span>Editar Todo</span>
-            </button>
           </nav>
 
-          {/* Watermark Selector & Cumplimiento General Counter */}
+          {/* Cumplimiento General Counter */}
           <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-slate-800">
-            {/* Watermark Selector */}
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-700 text-[11px]">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-slate-400 font-bold">Marca Agua:</span>
-              <select
-                value={watermarkIntensity}
-                onChange={(e) => setWatermarkIntensity(e.target.value as WatermarkIntensity)}
-                className="bg-transparent text-[#fed7aa] font-bold text-[11px] focus:outline-hidden cursor-pointer"
-                title="Ajustar visibilidad de la marca de agua corporativa oficial"
-              >
-                <option value="corporativa" className="bg-[#0f172a] text-white">Corporativa (Oficial)</option>
-                <option value="fuerte" className="bg-[#0f172a] text-white">Visible (Fuerte)</option>
-                <option value="sutil" className="bg-[#0f172a] text-white">Sutil</option>
-                <option value="desactivada" className="bg-[#0f172a] text-white">Ocultar</option>
-              </select>
-            </div>
-
             <div className="text-right">
               <span className="text-[10px] text-slate-400 uppercase font-bold block">
                 Cumplimiento General
@@ -356,7 +312,7 @@ export default function App() {
               }}
               className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-white hover:bg-slate-800"
             >
-              Ciclo PHVA (Diapositivas)
+              Ciclo PHVA
             </button>
             <button
               onClick={() => {
@@ -419,37 +375,14 @@ export default function App() {
                     {presentationConfig.matrizTabla?.titulo ||
                       'Matriz Normativa Completa de Requisitos Legales'}
                   </h2>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPresEditorInitialTab('guia');
-                      setIsGlobalPresEditorOpen(true);
-                    }}
-                    className="p-1 rounded text-slate-400 hover:text-[#f97316] hover:bg-orange-50 transition-colors"
-                    title="Editar título y descripción de la matriz"
-                  >
-                    <Edit3 className="h-3.5 w-3.5" />
-                  </button>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
                   {presentationConfig.matrizTabla?.descripcion ||
-                    `Total de ${items.length} disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S. (haga clic en Editar para modificar).`}
+                    `Total de ${items.length} disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S.`}
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPresEditorInitialTab('guia');
-                    setIsGlobalPresEditorOpen(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 text-xs font-bold transition-colors border border-slate-300"
-                  title="Editar textos de la matriz"
-                >
-                  <Edit3 className="h-3.5 w-3.5 text-[#f97316]" />
-                  <span>Editar Textos</span>
-                </button>
                 <button
                   onClick={() => handleAddNewNorma('PLANEAR')}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-[#f97316] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#ea580c] transition-colors shadow-xs"
@@ -825,13 +758,6 @@ export default function App() {
           />
         )}
       </main>
-
-      {/* CORPORATE WATERMARK LAYER */}
-      <CorporateWatermark
-        intensity={watermarkIntensity}
-        showControlBadge={true}
-        onIntensityChange={setWatermarkIntensity}
-      />
 
       {/* MODAL WITH THE 6 MANDATORY CIRCLES FROM SLIDE 5 (CON EDICIÓN COMPLETA) */}
       <NormaCirculosModal

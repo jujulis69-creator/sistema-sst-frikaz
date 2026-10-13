@@ -39,22 +39,22 @@ export interface ConfiguracionPresentacion {
 export const CONFIG_PRESENTACION_DEFAULT: ConfiguracionPresentacion = {
   appHeader: {
     empresa: 'FRIKAZ S.A.S.',
-    subtitulo: 'Evidencia 1 — Herramienta Automatizada SST y Ambiental (PHVA)',
+    subtitulo: 'Herramienta Automatizada SST y Ambiental (PHVA)',
     badge: 'Bosa · 10 Trab.',
   },
   banner: {
-    etiqueta: 'EVIDENCIA 1 — PRESENTACIÓN OFICIAL',
+    etiqueta: 'SISTEMA DE GESTIÓN PHVA',
     subetiqueta: 'HERRAMIENTA AUTOMATIZADA',
     empresaInfo: 'Frikaz S.A.S. (Bosa, Bogotá — 10 Trabajadores)',
     titulo: 'Sistema Automatizado PHVA — Normativa SST y Ambiental',
     descripcion:
-      'Seguimiento inteligente en tiempo real para Frikaz S.A.S. en las 4 fases del ciclo PHVA. Cada norma integra los 6 requisitos obligatorios de la evidencia curricular: Descripción, Importancia, Aplicabilidad, Vigencia oficial, Jurisdicción/Alcance y Evidencia probatoria.',
+      'Seguimiento inteligente en tiempo real para Frikaz S.A.S. en las 4 fases del ciclo PHVA. Cada norma integra los 6 requisitos obligatorios: Descripción, Importancia, Aplicabilidad, Vigencia oficial, Jurisdicción/Alcance y Evidencia probatoria.',
   },
   fases: {
     PLANEAR: {
       tituloFase: 'PLANEAR — Identificar Normativa (vigente) que regula cada situación y aplique a la pyme:',
       subtituloFase:
-        'Estructura curricular de la presentación. Haga clic en cualquier situación para ver o editar los 6 círculos obligatorios de la evidencia.',
+        'Estructura del sistema de gestión PHVA. Haga clic en cualquier situación para ver o editar los 6 círculos obligatorios de evaluación.',
       modulos: [
         {
           subtema: 'DIAGNÓSTICO',
@@ -161,13 +161,13 @@ export const CONFIG_PRESENTACION_DEFAULT: ConfiguracionPresentacion = {
     },
   },
   guiaDocente: {
-    titulo: 'Guía de Evaluación del Docente (Evidencia 1): Los 6 Círculos Obligatorios',
+    titulo: 'Guía de Evaluación Normativa: Los 6 Círculos Obligatorios',
     descripcion:
       'Cada norma identificada en esta herramienta responde a los 6 elementos evaluados en el proyector: 1. Descripción (qué regula), 2. Importancia (por qué es clave para Frikaz S.A.S. con 10 trabajadores y freidoras), 3. Aplicabilidad (qué debe hacer la pyme), 4. Vigente (comprobación de vigencia en la normativa colombiana), 5. Jurisdicción y Alcance (ámbito distrital Bogotá SDA / MinTrabajo nacional), y 6. Evidencia para Cumplimiento (soporte documental exigido).',
   },
   matrizTabla: {
     titulo: 'Matriz Normativa Completa de Requisitos Legales',
     descripcion:
-      'Total de disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S. (haga clic en Editar para modificar cualquier campo).',
+      'Total de disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S.',
   },
 };

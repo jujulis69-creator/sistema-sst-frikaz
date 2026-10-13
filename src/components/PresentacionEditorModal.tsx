@@ -46,7 +46,7 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
       if (!cloned.appHeader) {
         cloned.appHeader = {
           empresa: 'FRIKAZ S.A.S.',
-          subtitulo: 'Evidencia 1 — Herramienta Automatizada SST y Ambiental (PHVA)',
+          subtitulo: 'Herramienta Automatizada SST y Ambiental (PHVA)',
           badge: 'Bosa · 10 Trab.',
         };
       }
@@ -54,7 +54,7 @@ export const PresentacionEditorModal: React.FC<PresentacionEditorModalProps> = (
         cloned.matrizTabla = {
           titulo: 'Matriz Normativa Completa de Requisitos Legales',
           descripcion:
-            'Total de disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S. (haga clic en Editar para modificar).',
+            'Total de disposiciones legales colombianas vigentes aplicables a Frikaz S.A.S.',
         };
       }
       setFormData(cloned);

@@ -179,7 +179,7 @@ export function exportarMatrizPhvaCsv(items: NormaPhvaItem[]): void {
   const fecha = new Date().toLocaleString('es-CO');
   const rows: string[][] = [
     ['FRIKAZ S.A.S. - MATRIZ AUTOMATIZADA DE REQUISITOS LEGALES SST Y AMBIENTAL'],
-    ['EVIDENCIA 1 - HERRAMIENTA POTENCIADA POR IA'],
+    ['SISTEMA DE GESTIÓN INTEGRAL SST Y AMBIENTAL'],
     [`Fecha de Generación: ${fecha}`],
     ['Ubicación: Bosa, Piamonte, Bogotá D.C. | 10 Trabajadores'],
     [],

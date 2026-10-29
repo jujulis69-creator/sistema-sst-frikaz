@@ -27,6 +27,7 @@ import { NormaCirculosModal } from './components/NormaCirculosModal';
 import { PresentacionEditorModal } from './components/PresentacionEditorModal';
 import { MatrizExcelView } from './components/MatrizExcelView';
 import { ConfiguracionDinamicaEmpresaView } from './components/ConfiguracionDinamicaEmpresaView';
+import { MatrizRiesgosView } from './components/MatrizRiesgosView';
 import {
   ShieldCheck,
   Leaf,
@@ -46,9 +47,10 @@ import {
   Sparkles,
   FileSpreadsheet,
   SlidersHorizontal,
+  ShieldAlert,
 } from 'lucide-react';
 
-type TabView = 'phva_slides' | 'matriz_tabla' | 'matriz_excel' | 'ficha_empresa';
+type TabView = 'phva_slides' | 'matriz_tabla' | 'matriz_excel' | 'ficha_empresa' | 'matriz_riesgos';
 
 export default function App() {
   const [items, setItems] = useState<NormaPhvaItem[]>([]);
@@ -252,6 +254,20 @@ export default function App() {
               <SlidersHorizontal className="h-4 w-4" />
               <span>Configuración Dinámica de la Empresa</span>
             </button>
+
+            {/* BOTÓN EXCLUSIVO: MATRIZ DE RIESGOS */}
+            <button
+              onClick={() => setActiveTab('matriz_riesgos')}
+              className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                activeTab === 'matriz_riesgos'
+                  ? 'bg-rose-600 text-white border border-rose-400 shadow-md'
+                  : 'text-rose-300 hover:text-white hover:bg-rose-950/70 border border-rose-500/40'
+              }`}
+              title="Abrir módulo oficial: Matriz de identificación de peligros, evaluación y valoración de riesgos SST (GTC 45)"
+            >
+              <ShieldAlert className="h-4 w-4 text-rose-400" />
+              <span>Matriz de riesgos</span>
+            </button>
           </nav>
 
           {/* Cumplimiento General Counter */}
@@ -315,6 +331,16 @@ export default function App() {
             >
               <SlidersHorizontal className="h-4 w-4" />
               <span>Configuración Dinámica de la Empresa</span>
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('matriz_riesgos');
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-rose-300 hover:bg-slate-800 flex items-center gap-2"
+            >
+              <ShieldAlert className="h-4 w-4 text-rose-400" />
+              <span>Matriz de riesgos</span>
             </button>
           </div>
         )}
@@ -532,6 +558,9 @@ export default function App() {
             onSelectNorma={(norma) => handleOpenNorma(norma, false)}
           />
         )}
+
+        {/* VIEW 5: MATRIZ DE RIESGOS SST (GTC 45 - IDENTIFICACIÓN, EVALUACIÓN Y MEDIDAS) */}
+        {activeTab === 'matriz_riesgos' && <MatrizRiesgosView />}
       </main>
 
       {/* MODAL WITH THE 6 MANDATORY CIRCLES FROM SLIDE 5 (CON EDICIÓN COMPLETA) */}

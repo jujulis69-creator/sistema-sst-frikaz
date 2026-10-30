@@ -1,7 +1,12 @@
 // Realistic and complete GTC 45 Risk Matrix dataset for Frikaz S.A.S.
 // Based on "MATRIZ DE RIESGOS COMPLETADA.xlsx" according to GTC 45 Guide
 
-import { RiesgoGTC45Item, InterpretacionNP, InterpretacionNR, AceptabilidadRiesgo } from '../types/gtc45RiskMatrix';
+import {
+  RiesgoGTC45Item,
+  InterpretacionNP,
+  InterpretacionNR,
+  AceptabilidadRiesgo,
+} from '../types/gtc45RiskMatrix';
 
 export function calcularInterpretacionNP(np: number): InterpretacionNP {
   if (np >= 24) return 'Muy Alto';
@@ -10,12 +15,18 @@ export function calcularInterpretacionNP(np: number): InterpretacionNP {
   return 'Bajo';
 }
 
-export function calcularInterpretacionNR(nr: number): { interpretacion: InterpretacionNR; aceptabilidad: AceptabilidadRiesgo } {
+export function calcularInterpretacionNR(nr: number): {
+  interpretacion: InterpretacionNR;
+  aceptabilidad: AceptabilidadRiesgo;
+} {
   if (nr >= 600) {
     return { interpretacion: 'I', aceptabilidad: 'I - No Aceptable' };
   }
   if (nr >= 150) {
-    return { interpretacion: 'II', aceptabilidad: 'II - No Aceptable o Aceptable con control específico' };
+    return {
+      interpretacion: 'II',
+      aceptabilidad: 'II - No Aceptable o Aceptable con control específico',
+    };
   }
   if (nr >= 40) {
     return { interpretacion: 'III', aceptabilidad: 'III - Mejorable' };
@@ -34,6 +45,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de producción',
     actividades: 'Cocción y freído continuo de snacks (papas y plátanos)',
     tareas: 'Supervisión y control de temperatura de la freidora industrial continua (180 °C) y adición de aceite vegetal',
+    cargo: 'Operario de Fritura y Cocción',
+    cargosExpuestos: 'Operario de Fritura y Cocción, Auxiliar de Planta',
     rutinario: 'SÍ',
     peligroDescripcion: 'Exposición a fuentes de calor (temperaturas extremas por freidoras industriales a 180 °C)',
     peligroClasificacion: 'Físico',
@@ -68,6 +81,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de producción',
     actividades: 'Limpieza intermedia y sanitización de mesones y equipos en línea de fritura',
     tareas: 'Aplicación de productos químicos desengrasantes y desinfectantes concentrados sin etiquetado de fábrica',
+    cargo: 'Auxiliar de Limpieza y Sanitización',
+    cargosExpuestos: 'Auxiliar de Limpieza y Sanitización, Operario de Fritura y Cocción',
     rutinario: 'SÍ',
     peligroDescripcion: 'Productos químicos sin identificación adecuada (recipientes trasvasados sin etiqueta SGA ni FDS)',
     peligroClasificacion: 'Químico',
@@ -102,6 +117,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de producción',
     actividades: 'Pelado mecánico, rebanado centrífugo y extracción continua de humos',
     tareas: 'Operación continua junto al motor de rebanadora industrial Urschel y extractor extractor de campana',
+    cargo: 'Operario de Maquinaria y Rebanado',
+    cargosExpuestos: 'Operario de Maquinaria y Rebanado, Operario de Fritura y Cocción',
     rutinario: 'SÍ',
     peligroDescripcion: 'Ruido de máquinas continuo e intermitente generado por peladora, rebanadora y turbina de extracción',
     peligroClasificacion: 'Físico',
@@ -136,6 +153,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de producción',
     actividades: 'Inspección visual, selección en mesa transportadora y empaque manual de bolsas',
     tareas: 'Selección de hojuelas con defectos durante 6 a 8 horas continuas y sellado con pedal manual',
+    cargo: 'Operario de Selección y Empaque',
+    cargosExpuestos: 'Operario de Selección y Empaque, Empacador',
     rutinario: 'SÍ',
     peligroDescripcion: 'Posturas sostenidas y movimientos repetitivos de miembros superiores en mesa de selección y sellado',
     peligroClasificacion: 'Biomecánico',
@@ -174,6 +193,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de almacenamiento/aseo',
     actividades: 'Preparación de soluciones desinfectantes y desengrasantes para lavado de tinas y pisos',
     tareas: 'Dilución de hipoclorito de sodio al 13% y detergente alcalino cáustico en baldes con agua',
+    cargo: 'Auxiliar de Servicios Generales y Aseo',
+    cargosExpuestos: 'Auxiliar de Servicios Generales y Aseo, Auxiliar de Planta',
     rutinario: 'SÍ',
     peligroDescripcion: 'Manipulación de sustancias químicas corrosivas y oxidantes para lavado y sanitización',
     peligroClasificacion: 'Químico',
@@ -208,6 +229,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de almacenamiento/aseo',
     actividades: 'Lavado general de pisos y canastillas plásticas',
     tareas: 'Baldeo de agua con detergente y secado de pisos con haragán',
+    cargo: 'Auxiliar de Servicios Generales y Aseo',
+    cargosExpuestos: 'Auxiliar de Servicios Generales y Aseo, Auxiliar de Bodega y Logística',
     rutinario: 'SÍ',
     peligroDescripcion: 'Superficies resbaladizas y húmedas con agua y residuos jabonosos durante labores de aseo',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -246,6 +269,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Áreas de circulación y maquinaria',
     actividades: 'Transporte interno de canastillas con producto procesado y materias primas en estibador manual',
     tareas: 'Conducción manual de transpaleta cargada a través de pasillos de producción hacia zona de empaque',
+    cargo: 'Auxiliar de Bodega y Logística',
+    cargosExpuestos: 'Auxiliar de Bodega y Logística, Operario de Empaque y Paletizado',
     rutinario: 'SÍ',
     peligroDescripcion: 'Tránsito de equipos rodantes de carga manual y colisión con operarios o partes salientes de maquinaria',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -280,6 +305,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Áreas de circulación y maquinaria',
     actividades: 'Supervisión de cadenas cinemáticas, motores reductores y poleas motrices en bandas transportadoras',
     tareas: 'Paso cercano a sistemas de transmisión de potencia mecánica durante la operación',
+    cargo: 'Técnico de Mantenimiento Electromecánico',
+    cargosExpuestos: 'Técnico de Mantenimiento Electromecánico, Operario de Maquinaria y Rebanado',
     rutinario: 'SÍ',
     peligroDescripcion: 'Partes en movimiento desprovistas de resguardos fijos o enclavamientos de seguridad (atrapamiento mecánico)',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -318,6 +345,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de emergencias',
     actividades: 'Disponibilidad de botiquines, extintores portátiles, camilla rígida y rutas de evacuación',
     tareas: 'Verificación mensual de equipos contra incendios y despeje de pasillos hacia puertas de salida',
+    cargo: 'Brigadista de Emergencias',
+    cargosExpuestos: 'Brigadista de Emergencias, Todo el Personal (10 Trabajadores)',
     rutinario: 'NO',
     peligroDescripcion: 'Bloqueo u obstrucción de rutas de evacuación y salidas de emergencia por acopio temporal de canastillas',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -352,6 +381,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de emergencias',
     actividades: 'Atención inicial de conatos de incendio en freidoras o zona de gas',
     tareas: 'Activación del extintor de acetato de potasio (Clase K) ante ignición de aceite comestible',
+    cargo: 'Operario de Fritura y Cocción',
+    cargosExpuestos: 'Operario de Fritura y Cocción, Brigadista de Emergencias',
     rutinario: 'NO',
     peligroDescripcion: 'Conato de incendio por sobrecalentamiento de aceite vegetal comestible o fuga en quemador de gas',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -390,6 +421,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Instalaciones y área de producción',
     actividades: 'Suministro de energía eléctrica a motores trifásicos de 220V/440V y encendido de tableros',
     tareas: 'Accionamiento de disyuntores térmicos y supervisión de cableado de fuerza y control',
+    cargo: 'Técnico de Mantenimiento Electromecánico',
+    cargosExpuestos: 'Técnico de Mantenimiento Electromecánico, Operario de Fritura y Cocción',
     rutinario: 'SÍ',
     peligroDescripcion: 'Contacto eléctrico directo o indirecto con tableros de distribución sin contratapa y tomas expuestas a humedad',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -424,6 +457,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Instalaciones y área de producción',
     actividades: 'Alimentación de gas natural / GLP desde la red principal hacia los quemadores de freidoras y calderas',
     tareas: 'Encendido de quemadores, verificación de llama azul y purga de líneas de combustión',
+    cargo: 'Operario de Planta y Servicios',
+    cargosExpuestos: 'Operario de Planta y Servicios, Todo el Personal (10 Trabajadores)',
     rutinario: 'SÍ',
     peligroDescripcion: 'Riesgo tecnológico de fuga de gas combustible (gas natural o GLP) con atmósfera explosiva o deflagración',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -462,6 +497,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Exterior/punto de encuentro',
     actividades: 'Concentración y conteo de personal durante simulacros de evacuación o emergencias reales',
     tareas: 'Desplazamiento peatonal desde la nave hacia la acera pública y parqueadero externo',
+    cargo: 'Todo el Personal',
+    cargosExpuestos: 'Todo el Personal (10 Trabajadores)',
     rutinario: 'NO',
     peligroDescripcion: 'Fenómenos naturales: movimiento telúrico / sismo de mediana o alta magnitud en Bogotá D.C.',
     peligroClasificacion: 'Fenómenos Naturales',
@@ -496,6 +533,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Exterior/punto de encuentro',
     actividades: 'Ingreso y salida de trabajadores en turnos diurnos y vespertinos',
     tareas: 'Tránsito a pie por la vía pública perimetral de la planta hacia transporte masivo TransMilenio',
+    cargo: 'Conductor / Repartidor Logístico',
+    cargosExpuestos: 'Conductor / Repartidor Logístico, Todo el Personal (10 Trabajadores)',
     rutinario: 'SÍ',
     peligroDescripcion: 'Riesgo público: hurtos a mano armada, atracos, agresión física o asonadas en la vía pública',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -534,6 +573,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de almacenamiento/producción',
     actividades: 'Encajonado y empaque secundario de bolsas de chips en cajas de cartón corrugado',
     tareas: 'Paletizado manual y apilamiento vertical de cajas de 12 a 15 kg hasta una altura de 1.8 metros',
+    cargo: 'Operario de Empaque y Paletizado',
+    cargosExpuestos: 'Operario de Empaque y Paletizado, Auxiliar de Bodega y Logística',
     rutinario: 'SÍ',
     peligroDescripcion: 'Manipulación manual de cargas con flexión forzada de columna y levantamiento repetitivo de cajas',
     peligroClasificacion: 'Biomecánico',
@@ -568,6 +609,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de almacenamiento/producción',
     actividades: 'Apilamiento temporal de cajas embaladas listas para despacho a clientes',
     tareas: 'Acomodo de torres de cajas de cartón sin film estirable (vinipel) en zonas colindantes al tránsito de operarios',
+    cargo: 'Auxiliar de Bodega y Despacho',
+    cargosExpuestos: 'Auxiliar de Bodega y Despacho, Operario de Empaque y Paletizado',
     rutinario: 'SÍ',
     peligroDescripcion: 'Apilamiento inestable de bultos o cajas con potencial de desplome o derrumbe sobre trabajadores',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -606,6 +649,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de almacenamiento',
     actividades: 'Almacenamiento en estanterías metálicas de insumos secos (sal, condimentos, saborizantes y películas plásticas BOPP)',
     tareas: 'Colocación y extracción de insumos en niveles superiores de la estantería (hasta 3 metros de altura)',
+    cargo: 'Auxiliar de Bodega y Almacenamiento',
+    cargosExpuestos: 'Auxiliar de Bodega y Almacenamiento, Conductor / Repartidor Logístico',
     rutinario: 'SÍ',
     peligroDescripcion: 'Colapso estructural de estanterías metálicas por sobrecarga o falta de anclaje sísmico al piso',
     peligroClasificacion: 'Condiciones de Seguridad',
@@ -640,6 +685,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Área de almacenamiento',
     actividades: 'Inspección sanitaria y conservación de sacos de papa fresca y aceite en bidones',
     tareas: 'Revisión periódica de estibas para detectar presencia de insectos o excretas de roedores en bodega',
+    cargo: 'Auxiliar de Calidad y BPM',
+    cargosExpuestos: 'Auxiliar de Calidad y BPM, Auxiliar de Bodega y Almacenamiento',
     rutinario: 'SÍ',
     peligroDescripcion: 'Riesgo biológico por presencia potencial de plagas (roedores, moscas, cucarachas) y hongos por humedad en tubérculos',
     peligroClasificacion: 'Biológico',
@@ -678,6 +725,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Acceso y área de atención',
     actividades: 'Atención presencial a clientes mayoristas, repartidores, transportadores y proveedores',
     tareas: 'Recepción de pagos en efectivo, facturación electrónica, resolución de quejas y coordinación de despachos',
+    cargo: 'Asistente Administrativo y Comercial',
+    cargosExpuestos: 'Asistente Administrativo y Comercial, Recepcionista',
     rutinario: 'SÍ',
     peligroDescripcion: 'Exigencias de atención al público, manejo de dinero en efectivo y resolución de inconformidades (estrés laboral)',
     peligroClasificacion: 'Psicosocial',
@@ -712,6 +761,8 @@ export const RIESGOS_GTC45_DATASET: RiesgoGTC45Item[] = [
     zonaLugar: 'Acceso y área de atención',
     actividades: 'Digitación de pedidos, elaboración de remisiones y control contable en computadora',
     tareas: 'Trabajo sedentario en computador durante 7 horas con visualización continua de pantalla y digitación intensiva',
+    cargo: 'Auxiliar Contable y de Facturación',
+    cargosExpuestos: 'Auxiliar Contable y de Facturación, Asistente Administrativo y Comercial',
     rutinario: 'SÍ',
     peligroDescripcion: 'Postura sedente prolongada frente a pantalla de visualización de datos (PVD) con mobiliario no ergonómico',
     peligroClasificacion: 'Biomecánico',
@@ -754,6 +805,49 @@ export function obtenerAreasUnicas(items: RiesgoGTC45Item[]): string[] {
 
 // Helper to filter hazards by area
 export function obtenerRiesgosPorArea(items: RiesgoGTC45Item[], area: string): RiesgoGTC45Item[] {
-  if (!area || area === 'TODAS') return items;
+  if (!area || area === 'TODAS' || area === 'Todas las áreas') return items;
   return items.filter((item) => item.zonaLugar.toLowerCase() === area.toLowerCase());
+}
+
+// Helper to get unique cargos dynamically from dataset
+export function obtenerCargosUnicos(items: RiesgoGTC45Item[]): string[] {
+  const setCargos = new Set<string>();
+  items.forEach((item) => {
+    if (item.cargo && item.cargo.trim().length > 0) {
+      setCargos.add(item.cargo.trim());
+    }
+    if (item.cargosExpuestos && item.cargosExpuestos.trim().length > 0) {
+      item.cargosExpuestos.split(',').forEach((sub) => {
+        const c = sub.trim();
+        if (c.length > 0 && !c.includes('10 Trabajadores')) {
+          setCargos.add(c);
+        }
+      });
+    }
+  });
+  return Array.from(setCargos).sort((a, b) => a.localeCompare(b));
+}
+
+// Helper to get unique processes dynamically from dataset
+export function obtenerProcesosUnicos(items: RiesgoGTC45Item[]): string[] {
+  const setProcesos = new Set<string>();
+  items.forEach((item) => {
+    if (item.proceso && item.proceso.trim().length > 0) {
+      setProcesos.add(item.proceso.trim());
+    }
+  });
+  return Array.from(setProcesos).sort((a, b) => a.localeCompare(b));
+}
+
+// Helper to filter hazards by cargo
+export function obtenerRiesgosPorCargo(items: RiesgoGTC45Item[], cargoBuscado: string): RiesgoGTC45Item[] {
+  if (!cargoBuscado || cargoBuscado === 'TODOS' || cargoBuscado === 'Todos los cargos') {
+    return items;
+  }
+  const term = cargoBuscado.toLowerCase().trim();
+  return items.filter((item) => {
+    const c1 = (item.cargo || '').toLowerCase();
+    const c2 = (item.cargosExpuestos || '').toLowerCase();
+    return c1.includes(term) || c2.includes(term);
+  });
 }

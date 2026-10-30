@@ -91,6 +91,8 @@ export interface RiesgoGTC45Item {
   zonaLugar: string;
   actividades: string;
   tareas: string;
+  cargo?: string;
+  cargosExpuestos?: string;
   rutinario: 'SÍ' | 'NO';
 
   // 2. Identificación del peligro

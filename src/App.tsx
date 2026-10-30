@@ -54,8 +54,10 @@ type TabView = 'phva_slides' | 'matriz_tabla' | 'matriz_excel' | 'ficha_empresa'
 
 export default function App() {
   const [items, setItems] = useState<NormaPhvaItem[]>([]);
-  const [activeTab, setActiveTab] = useState<TabView>('phva_slides');
-  const [presentationConfig, setPresentationConfig] = useState<ConfiguracionPresentacion>(() => getPresentationConfig());
+  const [activeTab, setActiveTab] = useState<TabView>('matriz_riesgos');
+  const [presentationConfig, setPresentationConfig] = useState<ConfiguracionPresentacion>(() =>
+    getPresentationConfig()
+  );
   const [isGlobalPresEditorOpen, setIsGlobalPresEditorOpen] = useState(false);
   const [presEditorInitialTab, setPresEditorInitialTab] = useState<'banner' | 'fases' | 'modulos' | 'guia'>('banner');
   const [selectedNorma, setSelectedNorma] = useState<NormaPhvaItem | null>(null);
@@ -102,253 +104,287 @@ export default function App() {
   );
 
   // Add brand new norm
-  const handleAddNewNorma = useCallback((fase?: any) => {
-    const newNorm: NormaPhvaItem = {
-      id: `norma-${Date.now()}`,
-      fase: fase || 'PLANEAR',
-      subtema: 'NUEVA OBLIGACIÓN',
-      tituloSituacion: 'Nueva Obligación Legal / Situación Regulada',
-      normaOficial: 'Resolución / Decreto Nuevo',
-      entidadEmisora: 'Ministerio del Trabajo / SDA Bogotá',
-      articulos: 'Artículos aplicables',
-      area: 'SST',
-      descripcion: 'Describa qué regula esta disposición legal colombiana...',
-      importancia:
-        'Explique por qué es crucial para Frikaz S.A.S. (10 trabajadores, freidoras industriales)...',
-      aplicabilidad: 'Indique qué debe hacer la pyme concretamente...',
-      vigente: true,
-      textoVigencia: 'Vigente en la normativa colombiana (SUIN-Juriscol).',
-      jurisdiccionAlcance: 'Nacional / Distrital Bogotá D.C.',
-      evidenciaCumplimiento: 'Documento, formato o certificado probatorio exigido...',
-      estado: 'PARCIAL',
-      responsable: 'Responsable SG-SST / Gerente',
-      fechaVerificacion: new Date().toISOString().split('T')[0],
-      observaciones: 'Nueva norma ingresada para edición.',
-    };
-    const updated = updatePhvaNormFull(newNorm);
-    setItems(updated);
-    setSelectedNorma(newNorm);
-    setModalInitialEdit(true);
-    setIsModalOpen(true);
-  }, []);
-
-  // Handle status update (Automatización)
-  const handleUpdateStatus = useCallback((id: string, newStatus: EstadoCumplimiento) => {
-    const updated = updatePhvaNormStatus(id, newStatus);
-    setItems(updated);
-    if (selectedNorma && selectedNorma.id === id) {
-      setSelectedNorma({
-        ...selectedNorma,
-        estado: newStatus,
+  const handleAddNewNorma = useCallback(
+    (fase?: any) => {
+      const newNorm: NormaPhvaItem = {
+        id: `norma-${Date.now()}`,
+        fase: fase || 'PLANEAR',
+        subtema: 'DIAGNÓSTICO',
+        tituloSituacion: 'Nueva Obligación Legal / Situación Regulada',
+        normaOficial: 'Resolución / Decreto Nuevo',
+        entidadEmisora: 'Ministerio del Trabajo / SDA Bogotá',
+        articulos: 'Artículos aplicables',
+        area: 'SST',
+        descripcion: 'Describa qué regula esta disposición legal colombiana...',
+        importancia:
+          'Explique por qué es crucial para Frikaz S.A.S. (10 trabajadores, freidoras industriales)...',
+        aplicabilidad: 'Indique qué debe hacer la pyme concretamente...',
+        vigente: true,
+        textoVigencia: 'Vigente en la normativa colombiana (SUIN-Juriscol).',
+        jurisdiccionAlcance: 'Nacional y Distrital (Bogotá D.C.).',
+        evidenciaCumplimiento: 'Acta, registro o procedimiento documentado.',
+        estado: 'NO_CUMPLE',
+        responsable: 'Responsable SG-SST',
         fechaVerificacion: new Date().toISOString().split('T')[0],
-      });
+        observaciones: 'Obligación ingresada para seguimiento normativo.',
+      };
+      const updated = [newNorm, ...items];
+      savePhvaNorms(updated);
+      setItems(updated);
+      setSelectedNorma(newNorm);
+      setModalInitialEdit(true);
+      setIsModalOpen(true);
+    },
+    [items]
+  );
+
+  // Change individual norm status
+  const handleUpdateStatus = useCallback(
+    (id: string, nuevoEstado: EstadoCumplimiento) => {
+      const updated = updatePhvaNormStatus(id, nuevoEstado);
+      setItems(updated);
+      if (selectedNorma && selectedNorma.id === id) {
+        setSelectedNorma((prev) => (prev ? { ...prev, estado: nuevoEstado } : null));
+      }
+    },
+    [selectedNorma]
+  );
+
+  // Reset to default seed
+  const handleReset = useCallback(() => {
+    if (
+      window.confirm(
+        '¿Desea restaurar las 21 normas obligatorias iniciales de Frikaz S.A.S.? Esta acción devolverá los textos y evidencias a los valores predeterminados.'
+      )
+    ) {
+      const defaultItems = resetPhvaNormsToDefault();
+      setItems(defaultItems);
+      setSelectedNorma(null);
+      setIsModalOpen(false);
     }
-  }, [selectedNorma]);
-
-  const handleUpdatePresentationConfig = useCallback((updated: ConfiguracionPresentacion) => {
-    savePresentationConfig(updated);
-    setPresentationConfig(updated);
   }, []);
 
-  const handleResetPresentationConfig = useCallback(() => {
-    const reset = resetPresentationConfig();
-    setPresentationConfig(reset);
-  }, []);
-
-  const handleOpenNorma = (norma: NormaPhvaItem, editMode: boolean = false) => {
+  // Open modal in read-only or edit mode
+  const handleOpenNorma = useCallback((norma: NormaPhvaItem, editMode: boolean = false) => {
     setSelectedNorma(norma);
     setModalInitialEdit(editMode);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedNorma(null);
     setModalInitialEdit(false);
-  };
+  }, []);
 
-  const handleReset = () => {
-    if (window.confirm('¿Desea restablecer todos los datos del ciclo PHVA a los valores iniciales oficiales?')) {
-      const reset = resetPhvaNormsToDefault();
-      setItems(reset);
-      alert('Datos restablecidos correctamente.');
-    }
-  };
+  // Update presentation config
+  const handleUpdatePresentationConfig = useCallback(
+    (newConfig: ConfiguracionPresentacion) => {
+      savePresentationConfig(newConfig);
+      setPresentationConfig(newConfig);
+    },
+    []
+  );
+
+  const handleResetPresentationConfig = useCallback(() => {
+    const def = resetPresentationConfig();
+    setPresentationConfig(def);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col antialiased text-[#0f172a] relative">
-      {/* TOP HEADER: Paleta Azul Oscuro (#0f172a) con bordes Naranja Claro (#f97316) */}
-      <header className="sticky top-0 z-40 bg-[#0f172a] text-white border-b-2 border-[#f97316] shadow-md print:hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Logo & Corporate Title (EDITABLE) */}
-          <div className="flex items-center gap-3">
-            <img
-              src="/frikaz_logo.jpg"
-              alt="Logo Frikaz S.A.S."
-              className="h-12 w-auto max-w-[120px] object-contain rounded-lg border border-orange-200/50 bg-white p-0.5 shadow-sm shrink-0"
-            />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base sm:text-lg font-black tracking-tight text-white">
-                  {presentationConfig.appHeader?.empresa || 'FRIKAZ S.A.S.'}
+    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans antialiased flex flex-col">
+      {/* HEADER PRINCIPAL */}
+      <header className="sticky top-0 z-30 bg-[#0f172a] text-white border-b border-slate-800 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo y Nombre de la Empresa */}
+            <div className="flex items-center gap-3">
+              <img
+                src="/frikaz_logo.jpg"
+                alt="Frikaz S.A.S. Logo"
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl object-cover border border-orange-500/30 bg-white p-0.5 shadow-sm"
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-base sm:text-lg font-black tracking-tight text-white">
+                    Frikaz S.A.S.
+                  </h1>
+                  <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f97316] text-white">
+                    Pyme Fritos
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 hidden sm:block">
+                  Gestión Normativa SST y Ambiental • Bosa, Bogotá D.C.
+                </p>
+              </div>
+            </div>
+
+            {/* Navegación por pestañas (Desktop) */}
+            <nav className="hidden md:flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
+              <button
+                onClick={() => setActiveTab('phva_slides')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeTab === 'phva_slides'
+                    ? 'bg-[#f97316] text-white shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Ciclo PHVA</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('matriz_tabla')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeTab === 'matriz_tabla'
+                    ? 'bg-[#f97316] text-white shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <TableProperties className="h-3.5 w-3.5" />
+                <span>Matriz Completa</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('matriz_excel')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeTab === 'matriz_excel'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-300" />
+                <span>Matriz Excel</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('ficha_empresa')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeTab === 'ficha_empresa'
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5 text-purple-300" />
+                <span>Configuración Dinámica</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('matriz_riesgos')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeTab === 'matriz_riesgos'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <ShieldAlert className="h-3.5 w-3.5 text-rose-300" />
+                <span>Matriz de Riesgos</span>
+              </button>
+            </nav>
+
+            {/* Acciones y KPIs Rápidos */}
+            <div className="flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/60 text-xs">
+                <span className="text-slate-400">Cumplimiento:</span>
+                <span
+                  className={`font-black ${
+                    indicadores.generalPorcentaje >= 70
+                      ? 'text-emerald-400'
+                      : indicadores.generalPorcentaje >= 40
+                      ? 'text-orange-400'
+                      : 'text-red-400'
+                  }`}
+                >
+                  {indicadores.generalPorcentaje}%
                 </span>
-                <span className="rounded-md bg-[#fed7aa] px-2 py-0.5 text-[10px] font-black uppercase text-[#0f172a]">
-                  {presentationConfig.appHeader?.badge || 'Bosa · 10 Trab.'}
+                <span className="text-slate-500">•</span>
+                <span className="text-slate-300 font-medium">
+                  {indicadores.totalNormas} normas
                 </span>
               </div>
-              <p className="text-xs text-orange-200 font-medium leading-none mt-0.5">
-                {presentationConfig.appHeader?.subtitulo ||
-                  'Herramienta Automatizada SST y Ambiental (PHVA)'}
-              </p>
+
+              {/* Botón de Menú Móvil */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+                aria-label="Abrir menú"
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
             </div>
           </div>
-
-          {/* Navigation Tabs Desktop */}
-          <nav className="hidden md:flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab('phva_slides')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                activeTab === 'phva_slides'
-                  ? 'bg-[#f97316] text-white shadow-xs'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              <Award className="h-4 w-4" />
-              <span>Ciclo PHVA</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('matriz_tabla')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                activeTab === 'matriz_tabla'
-                  ? 'bg-[#f97316] text-white shadow-xs'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              <TableProperties className="h-4 w-4" />
-              <span>Matriz Normativa Completa</span>
-            </button>
-
-            {/* BOTÓN MATRIZ EXCEL AUTOMATIZADA */}
-            <button
-              onClick={() => setActiveTab('matriz_excel')}
-              className={`px-3 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
-                activeTab === 'matriz_excel'
-                  ? 'bg-emerald-600 text-white border border-emerald-400 shadow-md'
-                  : 'text-emerald-300 hover:text-white hover:bg-emerald-950/80 border border-emerald-500/40'
-              }`}
-              title="Abrir módulo oficial: Matriz Excel Automatizada (.xlsx con fórmulas y 6 hojas)"
-            >
-              <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
-              <span>Matriz Excel Automatizada</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('ficha_empresa')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                activeTab === 'ficha_empresa'
-                  ? 'bg-[#f97316] text-white shadow-xs'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              <span>Configuración Dinámica de la Empresa</span>
-            </button>
-
-            {/* BOTÓN EXCLUSIVO: MATRIZ DE RIESGOS */}
-            <button
-              onClick={() => setActiveTab('matriz_riesgos')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
-                activeTab === 'matriz_riesgos'
-                  ? 'bg-rose-600 text-white border border-rose-400 shadow-md'
-                  : 'text-rose-300 hover:text-white hover:bg-rose-950/70 border border-rose-500/40'
-              }`}
-              title="Abrir módulo oficial: Matriz de identificación de peligros, evaluación y valoración de riesgos SST (GTC 45)"
-            >
-              <ShieldAlert className="h-4 w-4 text-rose-400" />
-              <span>Matriz de riesgos</span>
-            </button>
-          </nav>
-
-          {/* Cumplimiento General Counter */}
-          <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-slate-800">
-            <div className="text-right">
-              <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                Cumplimiento General
-              </span>
-              <span className="text-base font-black font-mono text-[#fed7aa] tabular-nums leading-none">
-                {indicadores.generalPorcentaje}%
-              </span>
-            </div>
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-slate-300 hover:text-white md:hidden"
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Menú Móvil Desplegable */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-800 bg-[#0f172a] px-4 py-3 space-y-1">
+          <div className="md:hidden bg-[#0f172a] border-t border-slate-800 px-4 pt-2 pb-4 space-y-1">
             <button
               onClick={() => {
                 setActiveTab('phva_slides');
                 setMobileMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-white hover:bg-slate-800"
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold ${
+                activeTab === 'phva_slides' ? 'bg-[#f97316] text-white' : 'text-slate-300'
+              }`}
             >
-              Ciclo PHVA
+              <RefreshCw className="h-4 w-4" />
+              <span>Ciclo PHVA</span>
             </button>
             <button
               onClick={() => {
                 setActiveTab('matriz_tabla');
                 setMobileMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-white hover:bg-slate-800"
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold ${
+                activeTab === 'matriz_tabla' ? 'bg-[#f97316] text-white' : 'text-slate-300'
+              }`}
             >
-              Matriz Normativa Completa
+              <TableProperties className="h-4 w-4" />
+              <span>Matriz Completa</span>
             </button>
             <button
               onClick={() => {
                 setActiveTab('matriz_excel');
                 setMobileMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-emerald-300 hover:bg-slate-800 flex items-center gap-2"
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold ${
+                activeTab === 'matriz_excel' ? 'bg-emerald-600 text-white' : 'text-slate-300'
+              }`}
             >
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Matriz Excel Automatizada (.xlsx)</span>
+              <FileSpreadsheet className="h-4 w-4 text-emerald-300" />
+              <span>Matriz Excel</span>
             </button>
             <button
               onClick={() => {
                 setActiveTab('ficha_empresa');
                 setMobileMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-white hover:bg-slate-800 flex items-center gap-2"
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold ${
+                activeTab === 'ficha_empresa' ? 'bg-purple-600 text-white' : 'text-slate-300'
+              }`}
             >
-              <SlidersHorizontal className="h-4 w-4" />
-              <span>Configuración Dinámica de la Empresa</span>
+              <SlidersHorizontal className="h-4 w-4 text-purple-300" />
+              <span>Configuración Dinámica</span>
             </button>
             <button
               onClick={() => {
                 setActiveTab('matriz_riesgos');
                 setMobileMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-rose-300 hover:bg-slate-800 flex items-center gap-2"
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold ${
+                activeTab === 'matriz_riesgos' ? 'bg-rose-600 text-white' : 'text-slate-300'
+              }`}
             >
-              <ShieldAlert className="h-4 w-4 text-rose-400" />
-              <span>Matriz de riesgos</span>
+              <ShieldAlert className="h-4 w-4 text-rose-300" />
+              <span>Matriz de Riesgos</span>
             </button>
           </div>
         )}
       </header>
 
-      {/* MAIN CONTAINER */}
+      {/* CONTENEDOR PRINCIPAL */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        {/* VIEW 1: PHVA SLIDE VIEWER (CON EDICIÓN COMPLETA) */}
+        {/* VIEW 1: PHVA SLIDE VIEWER */}
         {activeTab === 'phva_slides' && (
           <PhvaSlideViewer
             items={items}
@@ -365,7 +401,7 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 2: FULL TABULAR NORMATIVE MATRIX CON EDICIÓN COMPLETA */}
+        {/* VIEW 2: MATRIZ TABULAR NORMATIVA COMPLETA */}
         {activeTab === 'matriz_tabla' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
@@ -449,13 +485,8 @@ export default function App() {
                         return matchSearch && matchArea;
                       })
                       .map((it) => (
-                        <tr
-                          key={it.id}
-                          className="hover:bg-[#fff7ed] transition-colors group"
-                        >
-                          <td className="px-4 py-3 font-bold text-[#0f172a]">
-                            {it.fase}
-                          </td>
+                        <tr key={it.id} className="hover:bg-[#fff7ed] transition-colors group">
+                          <td className="px-4 py-3 font-bold text-[#0f172a]">{it.fase}</td>
                           <td
                             onClick={() => handleOpenNorma(it)}
                             className="px-4 py-3 max-w-xs font-semibold text-slate-900 group-hover:text-[#0f172a] cursor-pointer hover:underline"
@@ -465,9 +496,7 @@ export default function App() {
                           <td className="px-4 py-3 whitespace-nowrap text-slate-800 font-medium">
                             {it.normaOficial}
                           </td>
-                          <td className="px-4 py-3 text-slate-500 font-mono">
-                            {it.articulos}
-                          </td>
+                          <td className="px-4 py-3 text-slate-500 font-mono">{it.articulos}</td>
                           <td className="px-4 py-3 whitespace-nowrap">
                             <span
                               className={`px-2 py-0.5 rounded-sm font-bold text-[10px] ${
@@ -508,7 +537,7 @@ export default function App() {
                                 type="button"
                                 onClick={() => handleOpenNorma(it, true)}
                                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#f97316] text-white hover:bg-[#ea580c] font-bold text-xs shadow-xs transition-colors"
-                                title="Editar todos los campos de esta norma (Descripción, Importancia, Aplicabilidad, etc.)"
+                                title="Editar norma"
                               >
                                 <Edit3 className="h-3 w-3" />
                                 <span>Editar</span>
@@ -517,7 +546,11 @@ export default function App() {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  if (window.confirm(`¿Eliminar la norma "${it.tituloSituacion}" de la matriz?`)) {
+                                  if (
+                                    window.confirm(
+                                      `¿Eliminar la norma "${it.tituloSituacion}" de la matriz?`
+                                    )
+                                  ) {
                                     handleDeleteNorma(it.id);
                                   }
                                 }}
@@ -537,7 +570,7 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 3: CONFIGURACIÓN DINÁMICA DE LA EMPRESA (MOTOR DE REGLAS INTERACTIVO) */}
+        {/* VIEW 3: CONFIGURACIÓN DINÁMICA DE LA EMPRESA */}
         {activeTab === 'ficha_empresa' && (
           <ConfiguracionDinamicaEmpresaView
             normas={items}
@@ -551,7 +584,7 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 4: MATRIZ EXCEL AUTOMATIZADA (.XLSX CON FÓRMULAS, 6 HOJAS Y DESCARGA REAL) */}
+        {/* VIEW 4: MATRIZ EXCEL AUTOMATIZADA */}
         {activeTab === 'matriz_excel' && (
           <MatrizExcelView
             items={items}
@@ -563,7 +596,7 @@ export default function App() {
         {activeTab === 'matriz_riesgos' && <MatrizRiesgosView />}
       </main>
 
-      {/* MODAL WITH THE 6 MANDATORY CIRCLES FROM SLIDE 5 (CON EDICIÓN COMPLETA) */}
+      {/* MODAL WITH THE 6 MANDATORY CIRCLES */}
       <NormaCirculosModal
         item={selectedNorma}
         isOpen={isModalOpen}

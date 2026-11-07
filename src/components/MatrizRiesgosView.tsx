@@ -45,7 +45,6 @@ import {
   ArrowRight,
   SlidersHorizontal,
   Eye,
-  LayoutGrid,
   Table as TableIcon,
   Plus,
   Edit,
@@ -58,7 +57,7 @@ import {
   FolderTree,
 } from 'lucide-react';
 
-export type ModoVistaMatriz = 'ficha' | 'por_cargos' | 'tabla' | 'tarjetas' | 'indicadores';
+export type ModoVistaMatriz = 'ficha' | 'por_cargos' | 'tabla' | 'indicadores';
 
 export function MatrizRiesgosView() {
   // Primary State initialized from persistent storage
@@ -451,7 +450,7 @@ export function MatrizRiesgosView() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold tracking-wide">
               <Shield className="h-3.5 w-3.5 text-emerald-400" />
-              SISTEMA SG-SST · GUÍA TÉCNICA COLOMBIANA GTC 45 (SEGUNDA ACTUALIZACIÓN)
+              SISTEMA SG-SST · GUÍA TÉCNICA COLOMBIANA GTC 45
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-3">
               <span>MATRIZ DE RIESGOS</span>
@@ -460,8 +459,8 @@ export function MatrizRiesgosView() {
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-              Identificación de peligros, evaluación y valoración de riesgos laborales estructurada en sus 6 secciones oficiales.
-              Consulte peligros agrupados por <strong className="text-white">Cargo</strong>, Zona o Proceso, examine fichas técnicas interactivas con desglose de consecuencia y gestione la jerarquía de controles.
+              Identificación de peligros y evaluación de riesgos organizada en 6 secciones sencillas.
+              Consulte los riesgos agrupados por <strong className="text-white">Puesto de trabajo (Cargo)</strong> o por lugar, revise las fichas técnicas interactivas y planifique las medidas de prevención para proteger a los trabajadores.
             </p>
           </div>
 
@@ -473,13 +472,13 @@ export function MatrizRiesgosView() {
                 <span className="text-xl font-black text-white font-mono">{estadisticas.total}</span>
               </div>
               <div className="text-center px-3 border-r border-slate-800">
-                <span className="block text-[10px] uppercase font-bold text-emerald-400">Cargos</span>
+                <span className="block text-[10px] uppercase font-bold text-emerald-400">Puestos / Cargos</span>
                 <span className="text-xl font-black text-emerald-400 font-mono">
                   {cargosDisponibles.length}
                 </span>
               </div>
               <div className="text-center px-3">
-                <span className="block text-[10px] uppercase font-bold text-rose-400">Críticos (I)</span>
+                <span className="block text-[10px] uppercase font-bold text-rose-400">Urgentes / Críticos (I)</span>
                 <span className="text-xl font-black text-rose-400 font-mono">
                   {estadisticas.nivelI}
                 </span>
@@ -493,7 +492,7 @@ export function MatrizRiesgosView() {
                 className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer transition-all"
               >
                 <Plus className="h-4 w-4" />
-                <span>+ Nuevo Peligro GTC 45</span>
+                <span>+ Agregar Peligro</span>
               </button>
 
               <button
@@ -511,7 +510,7 @@ export function MatrizRiesgosView() {
         {/* Action Bar (View Modes, Export, Print, Reset) */}
         <div className="relative z-10 mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-slate-400 font-medium mr-1">Modalidad de vista:</span>
+            <span className="text-slate-400 font-medium mr-1">Vistas de la matriz:</span>
             <button
               onClick={() => setViewMode('ficha')}
               className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
@@ -521,7 +520,7 @@ export function MatrizRiesgosView() {
               }`}
             >
               <Eye className="h-3.5 w-3.5" />
-              <span>Ficha Técnica (6 Secciones)</span>
+              <span>1. Ficha Técnica (6 Secciones)</span>
             </button>
             <button
               onClick={() => setViewMode('por_cargos')}
@@ -532,7 +531,7 @@ export function MatrizRiesgosView() {
               }`}
             >
               <Briefcase className="h-3.5 w-3.5" />
-              <span>Agrupación por Cargos ({cargosDisponibles.length})</span>
+              <span>2. Agrupación por Cargos ({cargosDisponibles.length})</span>
             </button>
             <button
               onClick={() => setViewMode('tabla')}
@@ -543,18 +542,7 @@ export function MatrizRiesgosView() {
               }`}
             >
               <TableIcon className="h-3.5 w-3.5" />
-              <span>Tabla Matriz Completa</span>
-            </button>
-            <button
-              onClick={() => setViewMode('tarjetas')}
-              className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                viewMode === 'tarjetas'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
-              }`}
-            >
-              <LayoutGrid className="h-3.5 w-3.5" />
-              <span>Tarjetas ({riesgosFiltrados.length})</span>
+              <span>3. Tabla Matriz Completa</span>
             </button>
             <button
               onClick={() => setViewMode('indicadores')}
@@ -565,7 +553,7 @@ export function MatrizRiesgosView() {
               }`}
             >
               <BarChart2 className="h-3.5 w-3.5" />
-              <span>Indicadores GTC 45</span>
+              <span>4. Indicadores y Estadísticas GTC 45</span>
             </button>
           </div>
 
@@ -607,7 +595,7 @@ export function MatrizRiesgosView() {
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4 text-emerald-400" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-              Búsqueda y Filtros Combinados (Por Cargo y por Riesgo)
+              Búsqueda y Filtros Fáciles (Por Puesto de Trabajo y por Peligro)
             </h2>
           </div>
           <div className="flex items-center gap-3">
@@ -632,12 +620,12 @@ export function MatrizRiesgosView() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5">
-          {/* FILTER 1: CARGO / PUESTO DE TRABAJO (PROMINENT GTC 45 REQUIREMENT) */}
+          {/* FILTER 1: CARGO / PUESTO DE TRABAJO */}
           <div className="space-y-1.5 sm:col-span-2 xl:col-span-2">
             <label className="text-xs font-bold text-slate-200 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-emerald-400">
                 <Briefcase className="h-3.5 w-3.5" />
-                <span>Filtrar por Cargo</span>
+                <span>Puesto de trabajo (Cargo)</span>
               </span>
               <span className="text-[10px] text-slate-400 font-mono">
                 ({cargosDisponibles.length} puestos)
@@ -648,7 +636,7 @@ export function MatrizRiesgosView() {
               onChange={(e) => setSelectedCargo(e.target.value)}
               className="w-full bg-slate-950 text-white font-medium text-xs rounded-xl px-3 py-2.5 border border-emerald-500/40 focus:outline-none focus:border-emerald-400 cursor-pointer shadow-inner"
             >
-              <option value="Todos los cargos">Todos los cargos ({dataset.length} peligros)</option>
+              <option value="Todos los cargos">Todos los puestos ({dataset.length} peligros)</option>
               {cargosDisponibles.map((cargo) => {
                 const count = obtenerRiesgosPorCargo(dataset, cargo).length;
                 return (
@@ -664,14 +652,14 @@ export function MatrizRiesgosView() {
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Zona / Lugar</span>
+              <span>Lugar / Zona</span>
             </label>
             <select
               value={selectedArea}
               onChange={(e) => setSelectedArea(e.target.value)}
               className="w-full bg-slate-950 text-white font-medium text-xs rounded-xl px-3 py-2.5 border border-slate-700 focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
-              <option value="Todas las áreas">Todas las áreas ({areasDisponibles.length})</option>
+              <option value="Todas las áreas">Todos los lugares ({areasDisponibles.length})</option>
               {areasDisponibles.map((area) => (
                 <option key={area} value={area}>
                   {area}
@@ -684,7 +672,7 @@ export function MatrizRiesgosView() {
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
               <FolderTree className="h-3.5 w-3.5 text-blue-400" />
-              <span>Proceso</span>
+              <span>Proceso operativo</span>
             </label>
             <select
               value={selectedProceso}
@@ -704,21 +692,21 @@ export function MatrizRiesgosView() {
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
               <Layers className="h-3.5 w-3.5 text-amber-400" />
-              <span>Clasificación</span>
+              <span>Tipo de peligro</span>
             </label>
             <select
               value={selectedClasificacion}
               onChange={(e) => setSelectedClasificacion(e.target.value)}
               className="w-full bg-slate-950 text-white font-medium text-xs rounded-xl px-3 py-2.5 border border-slate-700 focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
-              <option value="Todas">Todas las clasificaciones</option>
-              <option value="Físico">Físico</option>
-              <option value="Químico">Químico</option>
-              <option value="Biológico">Biológico</option>
-              <option value="Biomecánico">Biomecánico</option>
-              <option value="Psicosocial">Psicosocial</option>
-              <option value="Condiciones de Seguridad">Condiciones de Seguridad</option>
-              <option value="Fenómenos Naturales">Fenómenos Naturales</option>
+              <option value="Todas">Todos los tipos de peligro</option>
+              <option value="Físico">Físico (ruido, iluminación, vibraciones)</option>
+              <option value="Químico">Químico (gases, polvos, líquidos)</option>
+              <option value="Biológico">Biológico (virus, bacterias, hongos)</option>
+              <option value="Biomecánico">Biomecánico (posturas, esfuerzo, cargas)</option>
+              <option value="Psicosocial">Psicosocial (estrés, carga mental)</option>
+              <option value="Condiciones de Seguridad">Condiciones de Seguridad (caídas, mecánicos, eléctricos)</option>
+              <option value="Fenómenos Naturales">Fenómenos Naturales (sismos, lluvias)</option>
             </select>
           </div>
 
@@ -726,7 +714,7 @@ export function MatrizRiesgosView() {
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
               <Activity className="h-3.5 w-3.5 text-rose-400" />
-              <span>Nivel Riesgo (NR)</span>
+              <span>Nivel de riesgo</span>
             </label>
             <select
               value={selectedNivelRiesgo}
@@ -734,8 +722,8 @@ export function MatrizRiesgosView() {
               className="w-full bg-slate-950 text-white font-medium text-xs rounded-xl px-3 py-2.5 border border-slate-700 focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
               <option value="Todos">Todos los niveles</option>
-              <option value="I">Nivel I · No Aceptable ({estadisticas.nivelI})</option>
-              <option value="II">Nivel II · Específico ({estadisticas.nivelII})</option>
+              <option value="I">Nivel I · Urgente / No Aceptable ({estadisticas.nivelI})</option>
+              <option value="II">Nivel II · Específico / Corregir ({estadisticas.nivelII})</option>
               <option value="III">Nivel III · Mejorable ({estadisticas.nivelIII})</option>
               <option value="IV">Nivel IV · Aceptable ({estadisticas.nivelIV})</option>
             </select>
@@ -747,7 +735,7 @@ export function MatrizRiesgosView() {
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Buscar por riesgo (nombre, descripción, efectos posibles, clasificación, tareas o código)..."
+              placeholder="Buscar por palabra clave (nombre del peligro, daño a la salud, tarea, puesto o código)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-950 text-white text-xs rounded-xl pl-9 pr-8 py-2.5 border border-slate-700 focus:outline-none focus:border-emerald-500 placeholder:text-slate-500"
@@ -903,13 +891,25 @@ export function MatrizRiesgosView() {
               </div>
             </div>
 
-            <div className="pt-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 block">
-                Peligro - Descripción completa
-              </span>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5 leading-snug">
-                {selectedRisk.peligroDescripcion}
-              </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 block">
+                  ¿Qué puede causar daño? (Descripción del peligro)
+                </span>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5 leading-snug">
+                  {selectedRisk.peligroDescripcion}
+                </h2>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => handleOpenEdit(selectedRisk)}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/40 cursor-pointer transition-colors"
+                  title="Editar valores de deficiencia, exposición, consecuencia, personas expuestas, controles, etc."
+                >
+                  <Edit className="h-4 w-4" />
+                  <span>Editar Valores del Riesgo</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -924,9 +924,9 @@ export function MatrizRiesgosView() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                      1. Identificación de la Actividad
+                      1. Actividad y Puestos de Trabajo
                     </h3>
-                    <p className="text-[11px] text-slate-400">Contexto del proceso operativo, cargos y tareas</p>
+                    <p className="text-[11px] text-slate-400">Lugar donde se realiza, tareas y cargos involucrados</p>
                   </div>
                 </div>
                 <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
@@ -937,11 +937,11 @@ export function MatrizRiesgosView() {
               <div className="space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Proceso</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Proceso operativo</span>
                     {renderCampo(selectedRisk.proceso)}
                   </div>
                   <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Zona / Lugar</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Lugar / Zona de trabajo</span>
                     {renderCampo(selectedRisk.zonaLugar)}
                   </div>
                 </div>
@@ -950,7 +950,7 @@ export function MatrizRiesgosView() {
                 <div className="bg-slate-950/60 p-3 rounded-xl border border-emerald-500/30">
                   <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-1 flex items-center gap-1">
                     <Briefcase className="h-3 w-3" />
-                    Cargo o Cargos Expuestos
+                    Puesto de Trabajo o Cargos Expuestos
                   </span>
                   <p className="text-white text-sm font-bold">
                     {selectedRisk.cargosExpuestos || selectedRisk.cargo || 'Sin información registrada'}
@@ -958,21 +958,21 @@ export function MatrizRiesgosView() {
                 </div>
 
                 <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Actividades</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Actividad general</span>
                   {renderCampo(selectedRisk.actividades)}
                 </div>
 
                 <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Tareas</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Tareas específicas</span>
                   {renderCampo(selectedRisk.tareas)}
                 </div>
 
                 <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                      ¿Es una actividad rutinaria?
+                      ¿Es una tarea habitual / rutinaria?
                     </span>
-                    <span className="text-xs text-slate-400">Frecuencia habitual u ocasional</span>
+                    <span className="text-xs text-slate-400">¿Se hace todos los días o solo de vez en cuando?</span>
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 ${
@@ -986,7 +986,7 @@ export function MatrizRiesgosView() {
                     ) : (
                       <Info className="h-3.5 w-3.5 text-amber-400" />
                     )}
-                    <span>{selectedRisk.rutinario === 'SÍ' ? 'RUTINARIA (SÍ)' : 'NO RUTINARIA'}</span>
+                    <span>{selectedRisk.rutinario === 'SÍ' ? 'RUTINARIA (Habitual)' : 'NO RUTINARIA (Ocasional)'}</span>
                   </span>
                 </div>
               </div>
@@ -1001,9 +1001,9 @@ export function MatrizRiesgosView() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                      2. Identificación del Peligro
+                      2. Peligro y Daños Posibles
                     </h3>
-                    <p className="text-[11px] text-slate-400">Naturaleza, clasificación y efectos a la salud</p>
+                    <p className="text-[11px] text-slate-400">Qué puede causar daño y posibles consecuencias en la salud</p>
                   </div>
                 </div>
                 <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
@@ -1014,14 +1014,14 @@ export function MatrizRiesgosView() {
               <div className="space-y-3">
                 <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
                   <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-                    Descripción del Peligro
+                    ¿Qué puede causar el daño? (Descripción del peligro)
                   </span>
                   <p className="text-slate-100 text-sm font-semibold">{selectedRisk.peligroDescripcion}</p>
                 </div>
 
                 <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
                   <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-                    Clasificación del Peligro (GTC 45)
+                    Tipo de peligro (Clasificación GTC 45)
                   </span>
                   <div className="flex items-center gap-2 mt-1">
                     <span
@@ -1031,14 +1031,14 @@ export function MatrizRiesgosView() {
                     >
                       {selectedRisk.peligroClasificacion}
                     </span>
-                    <span className="text-xs text-slate-400">Factor de riesgo evaluado</span>
+                    <span className="text-xs text-slate-400">Categoría del factor de riesgo</span>
                   </div>
                 </div>
 
                 <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
                   <span className="text-[10px] uppercase font-bold text-rose-400 flex items-center gap-1 mb-1.5">
                     <Stethoscope className="h-3.5 w-3.5" />
-                    Efectos Posibles en la Salud y la Seguridad
+                    Posibles daños a la salud o accidentes (Efectos posibles)
                   </span>
                   <div className="p-2.5 rounded-lg bg-rose-950/20 border border-rose-500/20">
                     {renderCampo(selectedRisk.efectosPosibles)}
@@ -1056,9 +1056,9 @@ export function MatrizRiesgosView() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                      3. Controles Existentes
+                      3. Medidas de Prevención que ya Existen (Controles Existentes)
                     </h3>
-                    <p className="text-[11px] text-slate-400">Medidas implementadas actualmente en la empresa</p>
+                    <p className="text-[11px] text-slate-400">Medidas que la empresa ya tiene funcionando en este momento</p>
                   </div>
                 </div>
                 <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
@@ -1071,9 +1071,9 @@ export function MatrizRiesgosView() {
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] uppercase font-bold text-cyan-400 flex items-center gap-1">
                       <Wrench className="h-3 w-3" />
-                      Control en la Fuente
+                      En la fuente (en la máquina o equipo)
                     </span>
-                    <span className="text-[10px] text-slate-400">Equipo, máquina o proceso de origen</span>
+                    <span className="text-[10px] text-slate-400">Mantenimiento, guardas o diseño seguro</span>
                   </div>
                   <div className="mt-1">{renderCampo(selectedRisk.controlesFuente)}</div>
                 </div>
@@ -1082,9 +1082,9 @@ export function MatrizRiesgosView() {
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] uppercase font-bold text-emerald-400 flex items-center gap-1">
                       <Layers className="h-3 w-3" />
-                      Control en el Medio
+                      En el medio (en el ambiente o espacio de trabajo)
                     </span>
-                    <span className="text-[10px] text-slate-400">Ambiente, barreras físicas y ventilación</span>
+                    <span className="text-[10px] text-slate-400">Ventilación, barreras, iluminación o pisos</span>
                   </div>
                   <div className="mt-1">{renderCampo(selectedRisk.controlesMedio)}</div>
                 </div>
@@ -1093,9 +1093,9 @@ export function MatrizRiesgosView() {
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] uppercase font-bold text-amber-400 flex items-center gap-1">
                       <Users className="h-3 w-3" />
-                      Control en el Individuo
+                      En el trabajador (persona, capacitación o EPP actual)
                     </span>
-                    <span className="text-[10px] text-slate-400">Procedimientos, capacitación y EPP actual</span>
+                    <span className="text-[10px] text-slate-400">Inducción, pausas activas o equipos de protección</span>
                   </div>
                   <div className="mt-1">{renderCampo(selectedRisk.controlesIndividuo)}</div>
                 </div>
@@ -1111,9 +1111,9 @@ export function MatrizRiesgosView() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                      5. Criterios para Establecer Controles
+                      5. Personas Expuestas y Criterios de Control
                     </h3>
-                    <p className="text-[11px] text-slate-400">Población expuesta, peor daño y marco normativo</p>
+                    <p className="text-[11px] text-slate-400">Número de trabajadores expuestos y peor consecuencia posible</p>
                   </div>
                 </div>
                 <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
@@ -1125,7 +1125,7 @@ export function MatrizRiesgosView() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
                     <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-                      Número de Expuestos
+                      Número de personas expuestas
                     </span>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-emerald-400" />
@@ -1138,7 +1138,7 @@ export function MatrizRiesgosView() {
 
                   <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
                     <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-                      ¿Requisito Legal Específico?
+                      ¿Existe una norma o ley específica obligatoria?
                     </span>
                     <div className="flex items-center gap-2">
                       <span
@@ -1150,14 +1150,14 @@ export function MatrizRiesgosView() {
                       >
                         {selectedRisk.existenciaRequisitoLegal}
                       </span>
-                      <span className="text-xs text-slate-400">Obligación legal</span>
+                      <span className="text-xs text-slate-400">Requisito legal</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
                   <span className="text-[10px] uppercase font-bold text-rose-400 block mb-1">
-                    Peor Consecuencia Prevista
+                    Consecuencia más grave que podría ocurrir (Peor consecuencia)
                   </span>
                   <div className="p-2.5 rounded-lg bg-rose-950/20 border border-rose-500/20">
                     {renderCampo(selectedRisk.peorConsecuencia)}
@@ -1166,7 +1166,7 @@ export function MatrizRiesgosView() {
 
                 <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
                   <span className="text-[10px] uppercase font-bold text-cyan-400 block mb-1">
-                    Disposición / Norma Legal Asociada
+                    Norma o ley aplicable en Colombia
                   </span>
                   <div className="p-2 rounded-lg bg-cyan-950/20 border border-cyan-500/20">
                     {renderCampo(selectedRisk.requisitoLegalEspecifico)}
@@ -1185,50 +1185,65 @@ export function MatrizRiesgosView() {
                 </div>
                 <div>
                   <h3 className="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
-                    <span>4. Evaluación del Riesgo (GTC 45)</span>
+                    <span>4. Evaluación del Riesgo (Fórmulas GTC 45)</span>
                     <span className="text-xs font-normal normal-case text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/50 border border-emerald-500/30">
-                      Cálculos automáticos NP = ND × NE | NR = NP × NC
+                      Cálculos automáticos: NP = ND × NE | NR = NP × NC
                     </span>
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Deficiencia, exposición, probabilidad, consecuencia, nivel de riesgo y aceptabilidad
+                    Deficiencia, frecuencia de exposición, probabilidad, consecuencias y nivel de aceptabilidad
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                GTC 45 § 3.4
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleOpenEdit(selectedRisk)}
+                  className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                  title="Modificar los valores numéricos y cualitativos de este riesgo"
+                >
+                  <Edit className="h-3.5 w-3.5" />
+                  <span>Editar Valores GTC 45</span>
+                </button>
+                <span className="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                  GTC 45 § 3.4
+                </span>
+              </div>
             </div>
 
-            {/* FORMULA CARDS: ND, NE, NP, NC, NR, ACEPTABILIDAD */}
+            {/* FORMULA CARDS: ND, NE, NP, NC, NR, ACEPTABILIDAD CON LENGUAJE SENCILLO */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {/* ND */}
               <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 text-center">
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                  Nivel Deficiencia (ND)
+                  Nivel de deficiencia (ND)
                 </span>
                 <span className="text-2xl font-black text-white font-mono my-1 block">
                   {selectedRisk.nivelDeficiencia}
                 </span>
-                <span className="text-[11px] text-slate-400">
-                  {selectedRisk.nivelDeficiencia === 10
+                <span className="text-[11px] text-slate-400 block">
+                  {selectedRisk.nivelDeficiencia >= 10
                     ? 'Muy Alto (10)'
-                    : selectedRisk.nivelDeficiencia === 6
+                    : selectedRisk.nivelDeficiencia >= 6
                     ? 'Alto (6)'
-                    : 'Medio (2)'}
+                    : selectedRisk.nivelDeficiencia >= 2
+                    ? 'Medio (2)'
+                    : 'Bajo (0)'}
+                </span>
+                <span className="text-[9px] text-slate-500 mt-0.5 block leading-tight">
+                  Qué tan grave es la deficiencia
                 </span>
               </div>
 
               {/* NE */}
               <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 text-center">
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                  Nivel Exposición (NE)
+                  Nivel de exposición (NE)
                 </span>
                 <span className="text-2xl font-black text-white font-mono my-1 block">
                   {selectedRisk.nivelExposicion}
                 </span>
-                <span className="text-[11px] text-slate-400">
-                  {selectedRisk.nivelExposicion === 4
+                <span className="text-[11px] text-slate-400 block">
+                  {selectedRisk.nivelExposicion >= 4
                     ? 'Continua (4)'
                     : selectedRisk.nivelExposicion === 3
                     ? 'Frecuente (3)'
@@ -1236,51 +1251,63 @@ export function MatrizRiesgosView() {
                     ? 'Ocasional (2)'
                     : 'Esporádica (1)'}
                 </span>
+                <span className="text-[9px] text-slate-500 mt-0.5 block leading-tight">
+                  Cuánto tiempo o frecuencia
+                </span>
               </div>
 
               {/* NP = ND * NE */}
               <div className="bg-slate-950/80 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-950/10 text-center">
                 <span className="text-[10px] uppercase font-bold text-emerald-400 block">
-                  NP = ND × NE
+                  Posibilidad de daño (NP)
                 </span>
                 <span className="text-2xl font-black text-emerald-400 font-mono my-1 block">
                   {selectedRisk.nivelProbabilidad}
                 </span>
-                <span className="text-[11px] font-bold text-emerald-300">
+                <span className="text-[11px] font-bold text-emerald-300 block">
                   {selectedRisk.interpretacionNP}
+                </span>
+                <span className="text-[9px] text-emerald-400/70 mt-0.5 block leading-tight font-mono">
+                  NP = ND × NE
                 </span>
               </div>
 
               {/* NC */}
               <div className="bg-slate-950/80 p-3.5 rounded-xl border border-amber-500/30 bg-amber-950/10 text-center">
                 <span className="text-[10px] uppercase font-bold text-amber-400 block">
-                  Consecuencia (NC)
+                  Gravedad daño (NC)
                 </span>
                 <span className="text-2xl font-black text-amber-400 font-mono my-1 block">
                   {selectedRisk.nivelConsecuencia}
                 </span>
-                <span className="text-[11px] font-bold text-amber-300">
+                <span className="text-[11px] font-bold text-amber-300 block">
                   {TABLA_TECNICA_NC[selectedRisk.nivelConsecuencia]?.clasificacion || 'Evaluado'}
+                </span>
+                <span className="text-[9px] text-amber-400/70 mt-0.5 block leading-tight">
+                  Nivel de consecuencia
                 </span>
               </div>
 
               {/* NR = NP * NC */}
               <div className="bg-slate-950/80 p-3.5 rounded-xl border border-rose-500/30 bg-rose-950/10 text-center">
                 <span className="text-[10px] uppercase font-bold text-rose-400 block">
-                  NR = NP × NC
+                  Nivel de riesgo (NR)
                 </span>
                 <span className="text-2xl font-black text-rose-400 font-mono my-1 block">
                   {selectedRisk.nivelRiesgo}
                 </span>
-                <span className="text-[11px] font-black text-rose-300">
+                <span className="text-[11px] font-black text-rose-300 block">
                   Nivel {selectedRisk.interpretacionNR}
+                </span>
+                <span className="text-[9px] text-rose-400/70 mt-0.5 block leading-tight font-mono">
+                  NR = NP × NC
                 </span>
               </div>
 
               {/* ACEPTABILIDAD */}
               <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 text-center flex flex-col justify-between">
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                  Valoración Final
+                  ¿El riesgo es aceptable?
                 </span>
                 <div
                   className={`my-1 py-1 px-2 rounded-lg text-xs font-black ${getBadgeNivelRiesgo(
@@ -1295,7 +1322,9 @@ export function MatrizRiesgosView() {
                     ? 'Mejorable'
                     : 'Aceptable'}
                 </div>
-                <span className="text-[10px] text-slate-400">Intervención</span>
+                <span className="text-[10px] text-slate-400">
+                  {selectedRisk.aceptabilidadRiesgo}
+                </span>
               </div>
             </div>
 
@@ -1444,7 +1473,7 @@ export function MatrizRiesgosView() {
             </div>
           </div>
 
-          {/* SECCIÓN 6: MEDIDAS DE INTERVENCIÓN (JERARQUÍA DE CONTROLES) */}
+          {/* SECCIÓN 6: ACCIONES PARA PREVENIR O REDUCIR EL RIESGO (MEDIDAS DE INTERVENCIÓN) */}
           <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
@@ -1453,10 +1482,10 @@ export function MatrizRiesgosView() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                    6. Medidas de Intervención (Jerarquía de Controles GTC 45 / ISO 45001)
+                    6. Acciones para Prevenir o Reducir el Riesgo (Medidas de Intervención)
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    Plan de acción ordenado de mayor a menor efectividad preventiva
+                    Plan de acción ordenado de mayor a menor efectividad para eliminar o controlar el peligro
                   </p>
                 </div>
               </div>
@@ -1477,7 +1506,7 @@ export function MatrizRiesgosView() {
                       Prioridad 1
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mb-2">Suprimir el peligro físicamente</p>
+                  <p className="text-[11px] text-slate-400 mb-2">Eliminar el peligro completamente</p>
                   <div>{renderCampo(selectedRisk.medidaEliminacion)}</div>
                 </div>
                 <div className="pt-2 border-t border-slate-900 text-[10px] text-slate-500 font-mono">
@@ -1496,7 +1525,7 @@ export function MatrizRiesgosView() {
                       Prioridad 2
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mb-2">Reemplazar por menor riesgo</p>
+                  <p className="text-[11px] text-slate-400 mb-2">Cambiar por algo menos peligroso</p>
                   <div>{renderCampo(selectedRisk.medidaSustitucion)}</div>
                 </div>
                 <div className="pt-2 border-t border-slate-900 text-[10px] text-slate-500 font-mono">
@@ -1509,13 +1538,13 @@ export function MatrizRiesgosView() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] uppercase font-bold text-cyan-400">
-                      3. Controles de Ingeniería
+                      3. Controles de ingeniería
                     </span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 font-bold">
                       Prioridad 3
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mb-2">Aislar personas del peligro</p>
+                  <p className="text-[11px] text-slate-400 mb-2">Aislar o modificar máquinas o espacios</p>
                   <div>{renderCampo(selectedRisk.medidaControlesIngenieria)}</div>
                 </div>
                 <div className="pt-2 border-t border-slate-900 text-[10px] text-slate-500 font-mono">
@@ -1523,18 +1552,18 @@ export function MatrizRiesgosView() {
                 </div>
               </div>
 
-              {/* 4. CONTROLES ADMINISTRATIVOS */}
+              {/* 4. REGLAS, PROCEDIMIENTOS Y MEDIDAS DE ORGANIZACIÓN */}
               <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between space-y-2">
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] uppercase font-bold text-blue-400">
-                      4. Controles Administrativos
+                      4. Reglas y procedimientos
                     </span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 font-bold">
                       Prioridad 4
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mb-2">Señalización, advertencia, POES</p>
+                  <p className="text-[11px] text-slate-400 mb-2">Capacitación, normas y advertencias</p>
                   <div>{renderCampo(selectedRisk.medidaControlesAdministrativos)}</div>
                 </div>
                 <div className="pt-2 border-t border-slate-900 text-[10px] text-slate-500 font-mono">
@@ -1542,7 +1571,7 @@ export function MatrizRiesgosView() {
                 </div>
               </div>
 
-              {/* 5. EQUIPOS Y EPP */}
+              {/* 5. ELEMENTOS DE PROTECCIÓN PERSONAL */}
               <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between space-y-2">
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -1553,7 +1582,7 @@ export function MatrizRiesgosView() {
                       Prioridad 5
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mb-2">Protección individual certificada</p>
+                  <p className="text-[11px] text-slate-400 mb-2">Cascos, guantes, gafas, mascarillas</p>
                   <div>{renderCampo(selectedRisk.medidaEquiposEPP)}</div>
                 </div>
                 <div className="pt-2 border-t border-slate-900 text-[10px] text-slate-500 font-mono">
@@ -1744,19 +1773,19 @@ export function MatrizRiesgosView() {
                 {/* Agrupación de Secciones */}
                 <tr className="bg-slate-950 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-800 text-center">
                   <th colSpan={5} className="p-2 border-r border-slate-800 bg-slate-900/60">
-                    1. Identificación Actividad y Cargos
+                    1. Puestos de Trabajo y Lugar
                   </th>
                   <th colSpan={2} className="p-2 border-r border-slate-800 bg-blue-950/30 text-blue-300">
-                    2. Peligro
+                    2. Peligro y Daños
                   </th>
                   <th colSpan={3} className="p-2 border-r border-slate-800 bg-emerald-950/30 text-emerald-300">
-                    3. Controles
+                    3. Medidas Actuales
                   </th>
                   <th colSpan={6} className="p-2 border-r border-slate-800 bg-indigo-950/30 text-indigo-300">
-                    4. Evaluación GTC 45
+                    4. Evaluación GTC 45 (Fórmulas)
                   </th>
                   <th colSpan={2} className="p-2 border-r border-slate-800 bg-teal-950/30 text-teal-300">
-                    5. Criterios
+                    5. Personas y Consecuencia
                   </th>
                   <th className="p-2 text-center bg-slate-900/60">Acciones</th>
                 </tr>
@@ -1764,24 +1793,24 @@ export function MatrizRiesgosView() {
                 {/* Column Headers */}
                 <tr className="bg-slate-900 text-slate-200 font-bold text-[11px] border-b border-slate-800 whitespace-nowrap">
                   <th className="p-3 w-24">Código</th>
-                  <th className="p-3 w-40">Cargo(s) Expuesto(s)</th>
-                  <th className="p-3 w-36">Zona / Lugar</th>
+                  <th className="p-3 w-40">Puesto(s) de Trabajo</th>
+                  <th className="p-3 w-36">Lugar / Zona</th>
                   <th className="p-3 w-32">Proceso</th>
-                  <th className="p-3 w-16 text-center">Rutinario</th>
-                  <th className="p-3 w-36">Clasificación</th>
-                  <th className="p-3 min-w-[240px]">Descripción Peligro</th>
-                  <th className="p-3 w-32">Fuente</th>
-                  <th className="p-3 w-32">Medio</th>
-                  <th className="p-3 w-36">Individuo</th>
-                  <th className="p-3 w-12 text-center">ND</th>
-                  <th className="p-3 w-12 text-center">NE</th>
-                  <th className="p-3 w-16 text-center">NP</th>
-                  <th className="p-3 w-12 text-center">NC</th>
-                  <th className="p-3 w-16 text-center">NR</th>
-                  <th className="p-3 w-36 text-center">Aceptabilidad</th>
-                  <th className="p-3 w-16 text-center">Expuestos</th>
-                  <th className="p-3 w-40">Peor Consecuencia</th>
-                  <th className="p-3 w-28 text-center">Operaciones</th>
+                  <th className="p-3 w-16 text-center" title="¿Es una tarea habitual o rutinaria?">Habitual</th>
+                  <th className="p-3 w-36">Tipo Peligro</th>
+                  <th className="p-3 min-w-[240px]">¿Qué causa el daño? (Peligro)</th>
+                  <th className="p-3 w-32" title="En la máquina o equipo">En Fuente</th>
+                  <th className="p-3 w-32" title="En el ambiente o espacio">En Medio</th>
+                  <th className="p-3 w-36" title="En el trabajador o EPP">En Persona</th>
+                  <th className="p-3 w-12 text-center" title="Nivel de deficiencia (qué tan grave es la deficiencia)">ND</th>
+                  <th className="p-3 w-12 text-center" title="Nivel de exposición (cuánto tiempo o con qué frecuencia)">NE</th>
+                  <th className="p-3 w-16 text-center text-emerald-400" title="Posibilidad de que ocurra el daño (NP = ND × NE)">NP</th>
+                  <th className="p-3 w-12 text-center text-amber-400" title="Gravedad de las consecuencias (NC)">NC</th>
+                  <th className="p-3 w-16 text-center text-rose-400" title="Nivel de riesgo estimado (NR = NP × NC)">NR</th>
+                  <th className="p-3 w-36 text-center" title="¿El riesgo es aceptable en el trabajo?">¿Es Aceptable?</th>
+                  <th className="p-3 w-16 text-center" title="Número de personas expuestas">N° Personas</th>
+                  <th className="p-3 w-40">Consecuencia más grave</th>
+                  <th className="p-3 w-28 text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80 font-normal">
@@ -1887,135 +1916,7 @@ export function MatrizRiesgosView() {
       )}
 
       {/* =========================================================================
-          VIEW MODE 4: TARJETAS POR ZONA Y PUESTO
-         ========================================================================= */}
-      {viewMode === 'tarjetas' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
-            <div>
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <LayoutGrid className="h-5 w-5 text-emerald-400" />
-                <span>Cuadrícula de Peligros Valorados</span>
-                <span className="text-xs px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
-                  {riesgosFiltrados.length} registros
-                </span>
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Explore rápidamente los peligros con su respectivo cargo y nivel de aceptabilidad.
-              </p>
-            </div>
-            <button
-              onClick={handleOpenCreate}
-              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Nuevo Peligro</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {riesgosFiltrados.map((item) => (
-              <div
-                key={item.id}
-                className={`p-5 rounded-2xl border transition-all space-y-3 flex flex-col justify-between ${
-                  selectedRisk?.id === item.id
-                    ? 'bg-slate-900 border-emerald-500 shadow-lg ring-1 ring-emerald-500/50'
-                    : 'bg-slate-900/80 border-slate-800 hover:border-slate-700 hover:bg-slate-850/60'
-                }`}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-bold text-emerald-400">
-                      {item.codigo || item.id}
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${getBadgeClasificacion(
-                          item.peligroClasificacion
-                        )}`}
-                      >
-                        {item.peligroClasificacion}
-                      </span>
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-black ${getBadgeNivelRiesgo(
-                          item.interpretacionNR
-                        )}`}
-                      >
-                        Nivel {item.interpretacionNR} (NR={item.nivelRiesgo})
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Cargo Badge */}
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-300 font-semibold">
-                    <Briefcase className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                    <span className="truncate">{item.cargo || item.cargosExpuestos}</span>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-[11px] text-slate-400">
-                    <MapPin className="h-3 w-3 text-slate-500 shrink-0" />
-                    <span className="text-slate-300">{item.zonaLugar}</span>
-                    <span className="text-slate-600">·</span>
-                    <span className="truncate">{item.proceso}</span>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-white leading-snug line-clamp-2">
-                    {item.peligroDescripcion}
-                  </h4>
-
-                  <p className="text-xs text-slate-400 line-clamp-2">
-                    <strong className="text-slate-300">Tarea:</strong> {item.tareas}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-slate-800 space-y-2.5">
-                  <div className="flex items-center justify-between text-[11px] text-slate-400">
-                    <span>
-                      NP: <strong className="text-white">{item.nivelProbabilidad}</strong> ({item.interpretacionNP})
-                    </span>
-                    <span>
-                      NC: <strong className="text-white">{item.nivelConsecuencia}</strong> ({TABLA_TECNICA_NC[item.nivelConsecuencia]?.clasificacion})
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1">
-                    <button
-                      onClick={() => {
-                        setSelectedRiskId(item.id);
-                        setViewMode('ficha');
-                      }}
-                      className="text-emerald-400 hover:text-emerald-300 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                    >
-                      <span>Ver Ficha Técnica</span>
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </button>
-
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => handleOpenEdit(item)}
-                        className="p-1 text-slate-400 hover:text-white hover:bg-slate-800 rounded transition-colors cursor-pointer"
-                        title="Editar"
-                      >
-                        <Edit className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleOpenDelete(item)}
-                        className="p-1 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded transition-colors cursor-pointer"
-                        title="Eliminar"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          VIEW MODE 5: INDICADORES DENTRO DE LA MATRIZ (FEATURE 6)
+          VIEW MODE 4: INDICADORES DENTRO DE LA MATRIZ (GTC 45)
          ========================================================================= */}
       {viewMode === 'indicadores' && (
         <div className="space-y-6">
@@ -2139,7 +2040,7 @@ export function MatrizRiesgosView() {
                           <button
                             onClick={() => {
                               setSelectedArea(item.area);
-                              setViewMode('tarjetas');
+                              setViewMode('tabla');
                             }}
                             className="text-emerald-400 hover:text-emerald-300 text-[11px] font-semibold cursor-pointer"
                           >

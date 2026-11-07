@@ -31,7 +31,7 @@ export interface CriterioTecnicoNC {
   ejemplosOperativos: string;
 }
 
-export const TABLA_TECNICA_NC: Record<10 | 25 | 60 | 100, CriterioTecnicoNC> = {
+export const TABLA_TECNICA_NC: Record<number, CriterioTecnicoNC> = {
   10: {
     nc: 10,
     clasificacion: 'Leve',
@@ -106,11 +106,11 @@ export interface RiesgoGTC45Item {
   controlesIndividuo: string;
 
   // 4. Evaluación del riesgo (GTC 45)
-  nivelDeficiencia: 2 | 6 | 10;
-  nivelExposicion: 1 | 2 | 3 | 4;
+  nivelDeficiencia: 0 | 2 | 6 | 10 | number;
+  nivelExposicion: 1 | 2 | 3 | 4 | number;
   nivelProbabilidad: number; // ND * NE
   interpretacionNP: InterpretacionNP;
-  nivelConsecuencia: 10 | 25 | 60 | 100;
+  nivelConsecuencia: 10 | 25 | 60 | 100 | number;
   nivelRiesgo: number; // NP * NC
   interpretacionNR: InterpretacionNR;
   aceptabilidadRiesgo: AceptabilidadRiesgo;

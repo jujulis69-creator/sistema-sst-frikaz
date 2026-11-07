@@ -46,7 +46,22 @@ import {
   Clock,
   Eye,
   Activity,
+  Crown,
+  FileText,
+  Users2,
+  Inbox,
 } from 'lucide-react';
+import { OrganigramaInteractivoView } from './configuracion-dinamica/OrganigramaInteractivoView';
+import { PoliticaSstView } from './configuracion-dinamica/PoliticaSstView';
+import { PartesInteresadasView } from './configuracion-dinamica/partes-interesadas/PartesInteresadasView';
+import { DocumentosDevueltosView } from './configuracion-dinamica/documentos-devueltos/DocumentosDevueltosView';
+
+export type SubcategoriaConfiguracionDinamica =
+  | 'organigrama'
+  | 'politicas'
+  | 'partes_interesadas'
+  | 'documentos_devueltos'
+  | 'caracterizacion';
 
 interface ConfiguracionDinamicaEmpresaViewProps {
   normas: NormaPhvaItem[];
@@ -65,6 +80,9 @@ export const ConfiguracionDinamicaEmpresaView: React.FC<
   onOpenNormaModal,
   onOpenMatrizExcel,
 }) => {
+  // Subcategoría activa dentro de Configuración Dinámica (Organigrama, Políticas, Caracterización)
+  const [subcategoriaActiva, setSubcategoriaActiva] = useState<SubcategoriaConfiguracionDinamica>('organigrama');
+
   // Estado de la caracterización empresarial viva
   const [config, setConfig] = useState<CaracterizacionEmpresaDinamica>(() =>
     getCaracterizacionActual()
@@ -336,9 +354,147 @@ export const ConfiguracionDinamicaEmpresaView: React.FC<
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* ============================================================ */}
-      {/* 1. HEADER FUTURISTA 3D: CONFIGURACIÓN DINÁMICA DE LA EMPRESA */}
+      {/* SUB-NAVEGACIÓN OFICIAL EN CONFIGURACIÓN DINÁMICA             */}
       {/* ============================================================ */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-700/80 bg-linear-to-r from-[#0f172a] via-[#1e293b] to-[#0a192f] p-6 text-white shadow-2xl shadow-slate-950/50">
+      <div className="bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 shadow-xl flex flex-col sm:flex-row gap-2">
+        <button
+          onClick={() => setSubcategoriaActiva('organigrama')}
+          className={`flex-1 flex items-center justify-center sm:justify-start gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
+            subcategoriaActiva === 'organigrama'
+              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/50 ring-1 ring-purple-400/40'
+              : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <div className="p-2 rounded-lg bg-white/10 text-purple-300 shrink-0">
+            <Crown className="h-4 w-4" />
+          </div>
+          <div className="text-left">
+            <span className="block leading-tight text-white font-black text-xs sm:text-sm">
+              1. Organigrama y Responsabilidades SST
+            </span>
+            <span className="block text-[10px] font-normal opacity-85 text-purple-200">
+              3 Niveles · 7 Cargos · Descarga Individual Word (.DOCX)
+            </span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setSubcategoriaActiva('politicas')}
+          className={`flex-1 flex items-center justify-center sm:justify-start gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
+            subcategoriaActiva === 'politicas'
+              ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-950/50 ring-1 ring-orange-400/40'
+              : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <div className="p-2 rounded-lg bg-white/10 text-orange-200 shrink-0">
+            <FileText className="h-4 w-4" />
+          </div>
+          <div className="text-left">
+            <span className="block leading-tight text-white font-black text-xs sm:text-sm">
+              2. Políticas del SG-SST
+            </span>
+            <span className="block text-[10px] font-normal opacity-85 text-orange-200">
+              Política Oficial · Word · PDF / Imprimir · Historial
+            </span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setSubcategoriaActiva('partes_interesadas')}
+          className={`flex-1 flex items-center justify-center sm:justify-start gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
+            subcategoriaActiva === 'partes_interesadas'
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-950/50 ring-1 ring-blue-400/40'
+              : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <div className="p-2 rounded-lg bg-white/10 text-blue-200 shrink-0">
+            <Users2 className="h-4 w-4" />
+          </div>
+          <div className="text-left">
+            <span className="block leading-tight text-white font-black text-xs sm:text-sm">
+              3. Partes Interesadas
+            </span>
+            <span className="block text-[10px] font-normal opacity-85 text-blue-200">
+              Matriz · Checklists · Indicadores · Excel/PDF
+            </span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setSubcategoriaActiva('documentos_devueltos')}
+          className={`flex-1 flex items-center justify-center sm:justify-start gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
+            subcategoriaActiva === 'documentos_devueltos'
+              ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-950/50 ring-1 ring-amber-400/40'
+              : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <div className="p-2 rounded-lg bg-white/10 text-amber-200 shrink-0">
+            <Inbox className="h-4 w-4" />
+          </div>
+          <div className="text-left">
+            <span className="block leading-tight text-white font-black text-xs sm:text-sm">
+              4. Documentos devueltos por correo
+            </span>
+            <span className="block text-[10px] font-normal opacity-85 text-amber-200">
+              Bandeja Gmail · Visor en 1 Clic · Estados
+            </span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setSubcategoriaActiva('caracterizacion')}
+          className={`flex-1 flex items-center justify-center sm:justify-start gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
+            subcategoriaActiva === 'caracterizacion'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950/50 ring-1 ring-emerald-400/40'
+              : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <div className="p-2 rounded-lg bg-white/10 text-emerald-300 shrink-0">
+            <SlidersHorizontal className="h-4 w-4" />
+          </div>
+          <div className="text-left">
+            <span className="block leading-tight text-white font-black text-xs sm:text-sm">
+              5. Caracterización y Motor de Reglas
+            </span>
+            <span className="block text-[10px] font-normal opacity-85 text-emerald-200">
+              Parámetros Vivos · Simulación PHVA · Estándares
+            </span>
+          </div>
+        </button>
+      </div>
+
+      {/* SUBCATEGORÍA 1: ORGANIGRAMA Y RESPONSABILIDADES SST */}
+      {subcategoriaActiva === 'organigrama' && (
+        <OrganigramaInteractivoView
+          onIrAPoliticas={() => setSubcategoriaActiva('politicas')}
+          onIrADocumentosDevueltos={() => setSubcategoriaActiva('documentos_devueltos')}
+        />
+      )}
+
+      {/* SUBCATEGORÍA 2: POLÍTICAS DEL SG-SST */}
+      {subcategoriaActiva === 'politicas' && (
+        <PoliticaSstView
+          onIrADocumentosDevueltos={() => setSubcategoriaActiva('documentos_devueltos')}
+        />
+      )}
+
+      {/* SUBCATEGORÍA 3: PARTES INTERESADAS */}
+      {subcategoriaActiva === 'partes_interesadas' && (
+        <PartesInteresadasView />
+      )}
+
+      {/* SUBCATEGORÍA 4: DOCUMENTOS DEVUELTOS POR CORREO */}
+      {subcategoriaActiva === 'documentos_devueltos' && (
+        <DocumentosDevueltosView />
+      )}
+
+      {/* SUBCATEGORÍA 5: CARACTERIZACIÓN EMPRESARIAL Y MOTOR DE REGLAS (ORIGINAL) */}
+      {subcategoriaActiva === 'caracterizacion' && (
+        <div className="space-y-6">
+          {/* ============================================================ */}
+          {/* 1. HEADER FUTURISTA 3D: CONFIGURACIÓN DINÁMICA DE LA EMPRESA */}
+          {/* ============================================================ */}
+          <div className="relative overflow-hidden rounded-2xl border border-slate-700/80 bg-linear-to-r from-[#0f172a] via-[#1e293b] to-[#0a192f] p-6 text-white shadow-2xl shadow-slate-950/50">
         <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
         <div className="absolute right-40 -bottom-10 h-48 w-48 rounded-full bg-emerald-500/10 blur-2xl pointer-events-none" />
 
@@ -1058,6 +1214,8 @@ export const ConfiguracionDinamicaEmpresaView: React.FC<
           </div>
         </div>
       </div>
+    </div>
+  )}
 
       {/* ============================================================ */}
       {/* MODAL / PANTALLA DE COMPARACIÓN NORMATIVA Y APROBACIÓN */}

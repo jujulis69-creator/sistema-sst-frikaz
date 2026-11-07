@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   RiesgoGTC45Item,
   TipoClasificacionPeligro,
@@ -18,6 +18,10 @@ import {
   Calculator,
   Info,
   CheckCircle2,
+  Briefcase,
+  Wrench,
+  Users,
+  Scale,
 } from 'lucide-react';
 
 interface RiskFormModalProps {
@@ -42,9 +46,10 @@ export function RiskFormModal({
     actividades: '',
     tareas: '',
     cargo: '',
+    cargosExpuestos: '',
     rutinario: 'SÍ',
     peligroDescripcion: '',
-    peligroClasificacion: 'Físico',
+    peligroClasificacion: 'Condiciones de Seguridad',
     efectosPosibles: '',
     controlesFuente: '',
     controlesMedio: '',
@@ -66,10 +71,14 @@ export function RiskFormModal({
 
   const [activeTab, setActiveTab] = useState<number>(1);
 
-  // Sync when initialData changes
+  // Sync when initialData changes - Loads all existing values for easy editing
   useEffect(() => {
     if (initialData) {
-      setFormData({ ...initialData });
+      setFormData({
+        ...initialData,
+        cargo: initialData.cargo || initialData.cargosExpuestos || '',
+        cargosExpuestos: initialData.cargosExpuestos || initialData.cargo || '',
+      });
     } else {
       setFormData({
         id: `RSK-CUSTOM-${Date.now().toString().slice(-4)}`,
@@ -79,6 +88,7 @@ export function RiskFormModal({
         actividades: '',
         tareas: '',
         cargo: 'Operario',
+        cargosExpuestos: 'Operario',
         rutinario: 'SÍ',
         peligroDescripcion: '',
         peligroClasificacion: 'Condiciones de Seguridad',
@@ -104,18 +114,34 @@ export function RiskFormModal({
     setActiveTab(1);
   }, [initialData, existingAreas, isOpen]);
 
-  // Live Calculations according to GTC 45
-  const nd = (formData.nivelDeficiencia as 2 | 6 | 10) || 2;
-  const ne = (formData.nivelExposicion as 1 | 2 | 3 | 4) || 1;
+  // Live Calculations according to GTC 45 (Real-time recalculation upon manual edits)
+  const ndRaw = Number(formData.nivelDeficiencia);
+  const nd = isNaN(ndRaw) ? 0 : ndRaw;
+
+  const neRaw = Number(formData.nivelExposicion);
+  const ne = isNaN(neRaw) ? 1 : neRaw;
+
   const np = nd * ne;
   const interpretacionNP = calcularInterpretacionNP(np);
 
-  const nc = (formData.nivelConsecuencia as 10 | 25 | 60 | 100) || 10;
+  const ncRaw = Number(formData.nivelConsecuencia);
+  const nc = isNaN(ncRaw) ? 10 : ncRaw;
+
   const nr = np * nc;
   const { interpretacion: interpretacionNR, aceptabilidad: aceptabilidadRiesgo } =
     calcularInterpretacionNR(nr);
 
-  const criterioNC = TABLA_TECNICA_NC[nc];
+  const criterioNC =
+    TABLA_TECNICA_NC[nc as 10 | 25 | 60 | 100] || {
+      nc,
+      clasificacion: nc >= 60 ? 'Muy Grave / Crítico' : nc >= 25 ? 'Grave' : 'Leve',
+      colorBadge: 'bg-slate-700 text-white',
+      bgLight: 'bg-slate-900 border-slate-700 text-slate-200',
+      borderColor: 'border-slate-600',
+      definicionTecnica: 'Nivel de consecuencia ingresado manualmente.',
+      criterioIncapacidad: 'Según criterio médico ocupacional.',
+      ejemplosOperativos: 'Evaluación manual aprobada por SST.',
+    };
 
   if (!isOpen) return null;
 
@@ -125,6 +151,8 @@ export function RiskFormModal({
     const normalizar = (val?: string) =>
       val && val.trim().length > 0 ? val.trim() : 'Sin información registrada';
 
+    const cargoLimpio = formData.cargo?.trim() || formData.cargosExpuestos?.trim() || 'Operario';
+
     const itemToSave: RiesgoGTC45Item = {
       id: formData.id || `RSK-${Date.now()}`,
       codigo: formData.codigo || `GTC45-${Math.floor(100 + Math.random() * 900)}`,
@@ -132,8 +160,8 @@ export function RiskFormModal({
       zonaLugar: normalizar(formData.zonaLugar),
       actividades: normalizar(formData.actividades),
       tareas: normalizar(formData.tareas),
-      cargo: formData.cargo?.trim() || undefined,
-      cargosExpuestos: formData.cargosExpuestos?.trim() || formData.cargo?.trim() || undefined,
+      cargo: cargoLimpio,
+      cargosExpuestos: formData.cargosExpuestos?.trim() || cargoLimpio,
       rutinario: formData.rutinario || 'SÍ',
       peligroDescripcion: normalizar(formData.peligroDescripcion),
       peligroClasificacion: formData.peligroClasificacion || 'Condiciones de Seguridad',
@@ -181,7 +209,7 @@ export function RiskFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto animate-fadeIn">
       <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
-        {/* Header */}
+        {/* Header con lenguaje claro */}
         <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl">
@@ -189,13 +217,13 @@ export function RiskFormModal({
             </div>
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {initialData ? 'Editar Peligro GTC 45' : 'Nuevo Peligro / Registro GTC 45'}
+                {initialData ? 'Editar Valores del Riesgo' : 'Registrar Nuevo Riesgo'}
                 <span className="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-mono">
                   {formData.codigo || 'GTC45'}
                 </span>
               </h2>
               <p className="text-xs text-slate-400">
-                Guía Técnica Colombiana GTC 45 (Segunda Actualización) · 6 Secciones Oficiales
+                Identificación de peligros y evaluación de riesgos · Metodología GTC 45 explicada de forma sencilla
               </p>
             </div>
           </div>
@@ -207,15 +235,15 @@ export function RiskFormModal({
           </button>
         </div>
 
-        {/* Section Tabs */}
+        {/* Section Tabs con nombres claros y amigables */}
         <div className="flex items-center gap-1 px-4 py-2 bg-slate-950/70 border-b border-slate-800 overflow-x-auto text-xs font-medium">
           {[
-            { num: 1, label: '1. Actividad' },
-            { num: 2, label: '2. Peligro' },
-            { num: 3, label: '3. Controles' },
-            { num: 4, label: '4. Evaluación GTC 45' },
-            { num: 5, label: '5. Criterios' },
-            { num: 6, label: '6. Intervención' },
+            { num: 1, label: '1. Actividad y Puesto' },
+            { num: 2, label: '2. Peligro y Daños' },
+            { num: 3, label: '3. Medidas Actuales' },
+            { num: 4, label: '4. Evaluación del Riesgo' },
+            { num: 5, label: '5. Personas y Criterios' },
+            { num: 6, label: '6. Acciones a Tomar' },
           ].map((tab) => (
             <button
               key={tab.num}
@@ -234,22 +262,22 @@ export function RiskFormModal({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* TAB 1: IDENTIFICACIÓN DE LA ACTIVIDAD */}
+          {/* TAB 1: IDENTIFICACIÓN DE LA ACTIVIDAD Y PUESTO */}
           {activeTab === 1 && (
             <div className="space-y-4 animate-fadeIn">
               <div className="border-l-4 border-emerald-500 pl-3">
                 <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                  Sección 1: Identificación de la Actividad y Tareas
+                  Sección 1: Actividad y Puestos de Trabajo
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Ubicación física, contexto operativo y frecuencia de ejecución.
+                  ¿Dónde se hace la labor, quién la realiza y qué tareas incluye?
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Zona / Lugar de Trabajo *
+                    Lugar o Zona de Trabajo *
                   </label>
                   <input
                     type="text"
@@ -269,7 +297,7 @@ export function RiskFormModal({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Proceso *
+                    Proceso de la Empresa *
                   </label>
                   <input
                     type="text"
@@ -283,20 +311,37 @@ export function RiskFormModal({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Cargo / Puesto Asociado
+                    Puesto de Trabajo (Cargo) Principal *
                   </label>
                   <input
                     type="text"
+                    required
                     value={formData.cargo || ''}
                     onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
-                    placeholder="Ej. Operario de freidora, Empacador, Almacenista..."
+                    placeholder="Ej. Operario de Fritura y Cocción, Empacador..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    ¿Actividad Rutinaria? *
+                    Todos los Cargos Expuestos a este Peligro
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.cargosExpuestos || ''}
+                    onChange={(e) => setFormData({ ...formData, cargosExpuestos: e.target.value })}
+                    placeholder="Ej. Operario de Fritura, Auxiliar de Planta, Empacador..."
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-0.5">
+                    Puedes separar varios cargos por coma si aplica a más de uno.
+                  </p>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    ¿Es una actividad rutinaria (habitual)? *
                   </label>
                   <select
                     value={formData.rutinario || 'SÍ'}
@@ -305,35 +350,35 @@ export function RiskFormModal({
                     }
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   >
-                    <option value="SÍ">SÍ (Habitual en las operaciones diarias)</option>
-                    <option value="NO">NO (Esporádica, mantenimiento o imprevisto)</option>
+                    <option value="SÍ">SÍ — Se realiza todos los días o de forma habitual</option>
+                    <option value="NO">NO — Es esporádica, ocasional o de mantenimiento imprevisto</option>
                   </select>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Actividades *
+                    Actividad General *
                   </label>
                   <textarea
                     rows={2}
                     required
                     value={formData.actividades || ''}
                     onChange={(e) => setFormData({ ...formData, actividades: e.target.value })}
-                    placeholder="Describa la actividad general realizada en la zona..."
+                    placeholder="Describa brevemente qué se hace en esa área..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Tareas Específicas *
+                    Tareas Específicas Realizadas *
                   </label>
                   <textarea
                     rows={2}
                     required
                     value={formData.tareas || ''}
                     onChange={(e) => setFormData({ ...formData, tareas: e.target.value })}
-                    placeholder="Describa los pasos y tareas técnicas que componen la actividad..."
+                    placeholder="Describa los pasos y acciones concretas del trabajador..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -341,22 +386,22 @@ export function RiskFormModal({
             </div>
           )}
 
-          {/* TAB 2: IDENTIFICACIÓN DEL PELIGRO */}
+          {/* TAB 2: IDENTIFICACIÓN DEL PELIGRO Y DAÑOS */}
           {activeTab === 2 && (
             <div className="space-y-4 animate-fadeIn">
               <div className="border-l-4 border-blue-500 pl-3">
                 <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                  Sección 2: Identificación del Peligro y Efectos
+                  Sección 2: Identificación del Peligro y Daños Posibles
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Definición del factor de riesgo y consecuencias posibles sobre la salud.
+                  ¿Qué situación o condición puede causar daño y qué consecuencias traería para la salud?
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Clasificación del Peligro (GTC 45) *
+                    Tipo de Peligro (Clasificación GTC 45) *
                   </label>
                   <select
                     value={formData.peligroClasificacion || 'Condiciones de Seguridad'}
@@ -368,19 +413,19 @@ export function RiskFormModal({
                     }
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   >
-                    <option value="Físico">Físico (Ruido, calor, vibración, iluminación...)</option>
-                    <option value="Químico">Químico (Gases, vapores, polvos orgánicos/inorgánicos...)</option>
-                    <option value="Biológico">Biológico (Virus, bacterias, hongos, parásitos, picaduras...)</option>
-                    <option value="Biomecánico">Biomecánico (Posturas forzadas, sobreesfuerzo, levantamiento...)</option>
-                    <option value="Psicosocial">Psicosocial (Carga mental, jornada laboral, estrés...)</option>
-                    <option value="Condiciones de Seguridad">Condiciones de Seguridad (Mecánico, eléctrico, locativo, alturas...)</option>
-                    <option value="Fenómenos Naturales">Fenómenos Naturales (Sismo, terremoto, inundación, vendaval...)</option>
+                    <option value="Físico">Físico (ruido, calor de freidoras, vibraciones, iluminación)</option>
+                    <option value="Químico">Químico (gases, vapores, polvos, sustancias de limpieza)</option>
+                    <option value="Biológico">Biológico (bacterias, hongos, plagas, roedores, virus)</option>
+                    <option value="Biomecánico">Biomecánico (posturas incómodas, levantar peso, movimientos repetitivos)</option>
+                    <option value="Psicosocial">Psicosocial (estrés laboral, atención a clientes difíciles, sobrecarga)</option>
+                    <option value="Condiciones de Seguridad">Condiciones de Seguridad (máquinas sin resguardo, electricidad, caídas, golpes)</option>
+                    <option value="Fenómenos Naturales">Fenómenos Naturales (sismos, terremotos, inundaciones, vendavales)</option>
                   </select>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Descripción del Peligro *
+                    Descripción del Peligro (¿Qué situación de riesgo existe?) *
                   </label>
                   <textarea
                     rows={3}
@@ -389,14 +434,14 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, peligroDescripcion: e.target.value })
                     }
-                    placeholder="Ej. Atrapamiento por partes móviles de máquina empaquetadora, exposición a temperaturas de 180°C..."
+                    placeholder="Ej. Exposición a aceite caliente a 180 °C en freidoras, atrapamiento por piezas móviles sin guarda..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Efectos Posibles en la Salud *
+                    Efectos Posibles en la Salud (¿Qué daño o lesión puede causar?) *
                   </label>
                   <textarea
                     rows={3}
@@ -405,7 +450,7 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, efectosPosibles: e.target.value })
                     }
-                    placeholder="Ej. Quemaduras de 2.° y 3.° grado, heridas lacerantes, amputación, hipoacusia, lumbalgia..."
+                    placeholder="Ej. Quemaduras térmicas de 2.° y 3.° grado en brazos y cara, dolores de espalda, heridas, asfixia..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -413,48 +458,51 @@ export function RiskFormModal({
             </div>
           )}
 
-          {/* TAB 3: CONTROLES EXISTENTES */}
+          {/* TAB 3: MEDIDAS DE PREVENCIÓN EXISTENTES */}
           {activeTab === 3 && (
             <div className="space-y-4 animate-fadeIn">
               <div className="border-l-4 border-emerald-500 pl-3">
                 <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                  Sección 3: Controles Existentes
+                  Sección 3: Medidas de Prevención que ya Existen (Controles Actuales)
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Medidas actualmente implementadas en la fuente, el medio de propagación y el trabajador.
+                  ¿Qué protecciones tiene la empresa hoy en día en la máquina, en el espacio y en el trabajador?
                 </p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Control en la Fuente
+                  <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
+                    <span>Medidas en la Fuente (en la máquina o equipo de origen)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Termostatos, paradas de emergencia, mantenimiento</span>
                   </label>
                   <input
                     type="text"
                     value={formData.controlesFuente || ''}
                     onChange={(e) => setFormData({ ...formData, controlesFuente: e.target.value })}
-                    placeholder="Ej. Mantenimiento preventivo, sensores de parada automática, aislamiento térmico (o 'Sin información registrada')"
+                    placeholder="Ej. Termostato con corte automático, sensores de sobrecalentamiento (o 'Sin información registrada')"
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Control en el Medio
+                  <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
+                    <span>Medidas en el Medio (en el ambiente o espacio de trabajo)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Extractores de aire, barandas, ventilación, pisos</span>
                   </label>
                   <input
                     type="text"
                     value={formData.controlesMedio || ''}
                     onChange={(e) => setFormData({ ...formData, controlesMedio: e.target.value })}
-                    placeholder="Ej. Campanas de extracción de calor, barandas perimetrales, ventilación forzada..."
+                    placeholder="Ej. Campana extractora de calor y humos hacia el exterior, pasillos demarcados..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Control en el Individuo
+                  <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
+                    <span>Medidas en la Persona (en el trabajador)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Capacitación, pausas activas, EPP actuales</span>
                   </label>
                   <input
                     type="text"
@@ -462,7 +510,7 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, controlesIndividuo: e.target.value })
                     }
-                    placeholder="Ej. Uso de EPP específicos, capacitación técnica, pausas activas, protocolos POES..."
+                    placeholder="Ej. Guantes térmicos, careta de protección, curso de manipulación segura de freidoras..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -470,114 +518,194 @@ export function RiskFormModal({
             </div>
           )}
 
-          {/* TAB 4: EVALUACIÓN DEL RIESGO (GTC 45) */}
+          {/* TAB 4: EVALUACIÓN DEL RIESGO (EDICIÓN MANUAL Y CÁLCULOS GTC 45) */}
           {activeTab === 4 && (
             <div className="space-y-5 animate-fadeIn">
               <div className="border-l-4 border-indigo-500 pl-3">
                 <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                  Sección 4: Evaluación y Valoración del Riesgo (Fórmulas GTC 45)
+                  Sección 4: Evaluación del Riesgo (Fórmulas Oficiales GTC 45)
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Cálculo automático de NP (ND × NE) y NR (NP × NC) según tablas estándar GTC 45.
+                  Ingresa o modifica manualmente los valores de evaluación. El sistema recalcula la probabilidad y el riesgo automáticamente.
                 </p>
               </div>
 
-              {/* Live Evaluation Dashboard */}
-              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="block text-[10px] uppercase font-bold text-slate-400">NP (ND × NE)</span>
-                  <span className="text-xl font-black text-white font-mono">{np}</span>
-                  <span className="block text-[11px] font-semibold text-emerald-400 mt-0.5">
-                    {interpretacionNP}
+              {/* PANEL DE CÁLCULO AUTOMÁTICO (DIFERENCIADO VISUALMENTE) */}
+              <div className="p-4 bg-slate-950/90 rounded-xl border border-indigo-500/40 space-y-2 shadow-inner">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-wide flex items-center gap-1.5">
+                    <Calculator className="h-4 w-4 text-indigo-400" />
+                    Cálculo Automático GTC 45 (Se actualiza con los valores ingresados)
                   </span>
+                  <span className="text-[10px] text-slate-400 font-mono">Fórmulas fijas</span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="block text-[10px] uppercase font-bold text-slate-400">NC (Consecuencia)</span>
-                  <span className="text-xl font-black text-white font-mono">{nc}</span>
-                  <span className="block text-[11px] font-semibold text-amber-400 mt-0.5">
-                    {criterioNC.clasificacion}
-                  </span>
-                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center pt-1">
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="block text-[10px] uppercase font-bold text-slate-400">
+                      Posibilidad (NP = ND × NE)
+                    </span>
+                    <span className="text-2xl font-black text-white font-mono">{np}</span>
+                    <span className="block text-xs font-semibold text-emerald-400 mt-0.5">
+                      {interpretacionNP}
+                    </span>
+                  </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="block text-[10px] uppercase font-bold text-slate-400">NR = NP × NC</span>
-                  <span className="text-xl font-black text-white font-mono">{nr}</span>
-                  <span className="block text-[11px] font-semibold text-orange-400 mt-0.5">
-                    Nivel {interpretacionNR}
-                  </span>
-                </div>
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="block text-[10px] uppercase font-bold text-slate-400">
+                      Gravedad (NC)
+                    </span>
+                    <span className="text-2xl font-black text-white font-mono">{nc}</span>
+                    <span className="block text-xs font-semibold text-amber-400 mt-0.5">
+                      {criterioNC.clasificacion}
+                    </span>
+                  </div>
 
-                <div className={`p-2.5 rounded-lg border flex flex-col justify-center ${getBadgeNRColor(interpretacionNR)}`}>
-                  <span className="text-[10px] uppercase font-bold tracking-wide opacity-90">Aceptabilidad</span>
-                  <span className="text-xs font-black leading-tight mt-0.5">
-                    {aceptabilidadRiesgo}
-                  </span>
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="block text-[10px] uppercase font-bold text-slate-400">
+                      Nivel de Riesgo (NR = NP × NC)
+                    </span>
+                    <span className="text-2xl font-black text-white font-mono">{nr}</span>
+                    <span className="block text-xs font-semibold text-orange-400 mt-0.5">
+                      Nivel {interpretacionNR}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`p-2.5 rounded-lg border flex flex-col justify-center ${getBadgeNRColor(
+                      interpretacionNR
+                    )}`}
+                  >
+                    <span className="text-[10px] uppercase font-bold tracking-wide opacity-90">
+                      ¿Es Aceptable?
+                    </span>
+                    <span className="text-xs font-black leading-tight mt-0.5">
+                      {aceptabilidadRiesgo}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Selectors for ND, NE, NC */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nivel de Deficiencia (ND) *
-                  </label>
-                  <select
-                    value={formData.nivelDeficiencia || 6}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        nivelDeficiencia: Number(e.target.value) as 2 | 6 | 10,
-                      })
-                    }
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value={10}>10 - Muy Alto (Peligros graves sin control)</option>
-                    <option value={6}>6 - Alto (Peligros significativos / controles parciales)</option>
-                    <option value={2}>2 - Medio (Peligros poco significativos)</option>
-                  </select>
-                </div>
+              {/* CAMPOS MANUALES DE EVALUACIÓN (TOTALMENTE EDITABLES) */}
+              <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-700/80 space-y-4">
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wide block">
+                  Valores de Entrada Editables (Selecciona o escribe el valor numérico)
+                </span>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nivel de Exposición (NE) *
-                  </label>
-                  <select
-                    value={formData.nivelExposicion || 3}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        nivelExposicion: Number(e.target.value) as 1 | 2 | 3 | 4,
-                      })
-                    }
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value={4}>4 - Continua (Sin interrupción toda la jornada)</option>
-                    <option value={3}>3 - Frecuente (Varias veces durante la jornada)</option>
-                    <option value={2}>2 - Ocasional (Alguna vez por corto tiempo)</option>
-                    <option value={1}>1 - Esporádica (De manera eventual)</option>
-                  </select>
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* ND */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-200">
+                      Nivel de deficiencia (ND - qué tan grave es la deficiencia) *
+                    </label>
+                    <select
+                      value={formData.nivelDeficiencia ?? 6}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          nivelDeficiencia: Number(e.target.value),
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value={10}>10 — Muy Alto (Peligro grave sin medidas de prevención)</option>
+                      <option value={6}>6 — Alto (Peligro significativo con medidas parciales)</option>
+                      <option value={2}>2 — Medio (Peligro menor con medidas mejorables)</option>
+                      <option value={0}>0 — Sin deficiencia detectada (Medidas preventivas eficaces)</option>
+                    </select>
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-[10px] text-slate-400">Ingreso manual:</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={10}
+                        value={formData.nivelDeficiencia ?? 6}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            nivelDeficiencia: Number(e.target.value),
+                          })
+                        }
+                        className="w-20 bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-xs text-white text-center font-mono focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nivel de Consecuencia (NC) *
-                  </label>
-                  <select
-                    value={formData.nivelConsecuencia || 25}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        nivelConsecuencia: Number(e.target.value) as 10 | 25 | 60 | 100,
-                      })
-                    }
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value={10}>10 - Leve (Primeros auxilios / 1 a 3 días)</option>
-                    <option value={25}>25 - Grave (Incapacidad temporal 4 a 30 días)</option>
-                    <option value={60}>60 - Muy Grave (Incapacidad &gt;30 días / Invalidez parcial)</option>
-                    <option value={100}>100 - Mortal / Catastrófico (Invalidez permanente / Muerte)</option>
-                  </select>
+                  {/* NE */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-200">
+                      Nivel de exposición (NE - cuánto tiempo o con qué frecuencia) *
+                    </label>
+                    <select
+                      value={formData.nivelExposicion ?? 3}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          nivelExposicion: Number(e.target.value),
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value={4}>4 — Continua (Durante toda la jornada de trabajo)</option>
+                      <option value={3}>3 — Frecuente (Varias veces al día por tiempos cortos)</option>
+                      <option value={2}>2 — Ocasional (Alguna vez en la jornada por poco tiempo)</option>
+                      <option value={1}>1 — Esporádica (De manera eventual o imprevista)</option>
+                    </select>
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-[10px] text-slate-400">Ingreso manual:</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={4}
+                        value={formData.nivelExposicion ?? 3}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            nivelExposicion: Number(e.target.value),
+                          })
+                        }
+                        className="w-20 bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-xs text-white text-center font-mono focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* NC */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-200">
+                      Gravedad de las consecuencias (NC - Nivel de consecuencia) *
+                    </label>
+                    <select
+                      value={formData.nivelConsecuencia ?? 25}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          nivelConsecuencia: Number(e.target.value),
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value={100}>100 — Mortal o Catastrófico (Invalidez total o muerte)</option>
+                      <option value={60}>60 — Muy Grave (Incapacidad &gt;30 días o invalidez parcial)</option>
+                      <option value={25}>25 — Grave (Incapacidad temporal de 4 a 30 días)</option>
+                      <option value={10}>10 — Leve (Primeros auxilios o incapacidad de 1 a 3 días)</option>
+                    </select>
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-[10px] text-slate-400">Ingreso manual:</span>
+                      <input
+                        type="number"
+                        min={10}
+                        max={100}
+                        value={formData.nivelConsecuencia ?? 25}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            nivelConsecuencia: Number(e.target.value),
+                          })
+                        }
+                        className="w-20 bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-xs text-white text-center font-mono focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -587,37 +715,37 @@ export function RiskFormModal({
                   <span className={`text-xs px-2 py-0.5 rounded-md font-bold ${criterioNC.colorBadge}`}>
                     NC = {criterioNC.nc} · {criterioNC.clasificacion}
                   </span>
-                  <span className="text-xs font-semibold">Criterio Técnico GTC 45</span>
+                  <span className="text-xs font-semibold">Explicación sencilla de la consecuencia</span>
                 </div>
                 <p className="text-xs leading-relaxed mb-2">
-                  <strong>Definición:</strong> {criterioNC.definicionTecnica}
+                  <strong>¿Qué significa?:</strong> {criterioNC.definicionTecnica}
                 </p>
                 <p className="text-xs leading-relaxed mb-1">
-                  <strong>Incapacidad:</strong> {criterioNC.criterioIncapacidad}
+                  <strong>Tiempo de incapacidad estimado:</strong> {criterioNC.criterioIncapacidad}
                 </p>
                 <p className="text-[11px] opacity-80 italic">
-                  <strong>Ejemplos:</strong> {criterioNC.ejemplosOperativos}
+                  <strong>Ejemplos en la vida real:</strong> {criterioNC.ejemplosOperativos}
                 </p>
               </div>
             </div>
           )}
 
-          {/* TAB 5: CRITERIOS PARA ESTABLECER CONTROLES */}
+          {/* TAB 5: CRITERIOS PARA DEFINIR CONTROLES */}
           {activeTab === 5 && (
             <div className="space-y-4 animate-fadeIn">
               <div className="border-l-4 border-slate-500 pl-3">
                 <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                  Sección 5: Criterios para Establecer Controles
+                  Sección 5: Personas Expuestas y Criterios de Control
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Alcance humano, severidad máxima y fundamento legal en Colombia.
+                  ¿Cuántas personas están en riesgo, qué es lo peor que podría pasar y qué norma aplica?
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    N° de Trabajadores Expuestos *
+                    Número de personas expuestas al peligro *
                   </label>
                   <input
                     type="number"
@@ -629,11 +757,14 @@ export function RiskFormModal({
                     }
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   />
+                  <p className="text-[10px] text-slate-500 mt-0.5">
+                    Cantidad de trabajadores que desempeñan esta labor
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    ¿Existe Requisito Legal Específico? *
+                    ¿Existe una norma o requisito legal obligatorio? *
                   </label>
                   <select
                     value={formData.existenciaRequisitoLegal || 'SÍ'}
@@ -645,14 +776,14 @@ export function RiskFormModal({
                     }
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   >
-                    <option value="SÍ">SÍ</option>
-                    <option value="NO">NO</option>
+                    <option value="SÍ">SÍ — Existe norma obligatoria en Colombia</option>
+                    <option value="NO">NO — Es una medida recomendada sin norma específica</option>
                   </select>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Peor Consecuencia Posible *
+                    Consecuencia más grave que podría ocurrir (Peor consecuencia) *
                   </label>
                   <textarea
                     rows={2}
@@ -661,14 +792,14 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, peorConsecuencia: e.target.value })
                     }
-                    placeholder="Ej. Muerte por atrapamiento, quemaduras graves en miembros superiores, amputación..."
+                    placeholder="Ej. Quemaduras de 2.° y 3.° grado en rostro con hospitalización prolongada, muerte por electrocución..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Norma o Requisito Legal Específico Asociado
+                    Norma o Requisito Legal Específico Aplicable
                   </label>
                   <input
                     type="text"
@@ -676,7 +807,7 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, requisitoLegalEspecifico: e.target.value })
                     }
-                    placeholder="Ej. Resolución 2400 de 1979 (Arts. 63-69), Decreto 1072 de 2015, Res. 4272 de 2021..."
+                    placeholder="Ej. Resolución 2400 de 1979 (Arts. 63-69), Decreto 1072 de 2015, Resolución 773 de 2021..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -684,25 +815,23 @@ export function RiskFormModal({
             </div>
           )}
 
-          {/* TAB 6: MEDIDAS DE INTERVENCIÓN (JERARQUÍA GTC 45) */}
+          {/* TAB 6: ACCIONES PARA PREVENIR O REDUCIR EL RIESGO (JERARQUÍA DE INTERVENCIÓN) */}
           {activeTab === 6 && (
             <div className="space-y-4 animate-fadeIn">
               <div className="border-l-4 border-teal-500 pl-3">
                 <h3 className="text-sm font-bold text-white uppercase tracking-wide">
-                  Sección 6: Medidas de Intervención (Jerarquía de Controles)
+                  Sección 6: Acciones para Prevenir o Reducir el Riesgo (Jerarquía de Controles)
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Plan de acción formulado siguiendo el orden de efectividad técnica.
+                  Plan de acción ordenado de la medida más efectiva (eliminar el peligro) a la protección del trabajador (EPP).
                 </p>
               </div>
 
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
-                    <span>1. Eliminación</span>
-                    <span className="text-[10px] text-slate-500 font-normal">
-                      Mayor efectividad (Eliminar el peligro físico)
-                    </span>
+                    <span>1. Eliminación (suprimir el peligro por completo)</span>
+                    <span className="text-[10px] text-rose-400 font-bold">Máxima efectividad</span>
                   </label>
                   <input
                     type="text"
@@ -710,17 +839,15 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, medidaEliminacion: e.target.value })
                     }
-                    placeholder="Ej. No viable técnicamente / Modificación del proceso para suprimir el peligro..."
+                    placeholder="Ej. Suprimir el proceso peligroso o 'Sin información registrada' si no es técnicamente viable..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
-                    <span>2. Sustitución</span>
-                    <span className="text-[10px] text-slate-500 font-normal">
-                      Reemplazar por materiales o métodos menos peligrosos
-                    </span>
+                    <span>2. Sustitución (cambiar por algo menos peligroso)</span>
+                    <span className="text-[10px] text-amber-400 font-bold">Muy alta efectividad</span>
                   </label>
                   <input
                     type="text"
@@ -728,17 +855,15 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, medidaSustitucion: e.target.value })
                     }
-                    placeholder="Ej. Reemplazar sustancias tóxicas por productos biodegradables, sustituir herramienta manual..."
+                    placeholder="Ej. Reemplazar sustancias corrosivas por desengrasantes biodegradables neutros..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
-                    <span>3. Controles de Ingeniería</span>
-                    <span className="text-[10px] text-slate-500 font-normal">
-                      Aislamiento, resguardos, sensores y extractores
-                    </span>
+                    <span>3. Controles de ingeniería (protecciones físicas, aislamientos y resguardos)</span>
+                    <span className="text-[10px] text-cyan-400 font-bold">Alta efectividad</span>
                   </label>
                   <textarea
                     rows={2}
@@ -746,17 +871,15 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, medidaControlesIngenieria: e.target.value })
                     }
-                    placeholder="Ej. Instalación de guardas transparentes de policarbonato, botón de parada de emergencia, extractor..."
+                    placeholder="Ej. Instalar barreras transparentes antichispas, paradas de emergencia tipo hongo, alarmas acústicas..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
-                    <span>4. Controles Administrativos y Señalización</span>
-                    <span className="text-[10px] text-slate-500 font-normal">
-                      Procedimientos seguros, rotación y capacitación
-                    </span>
+                    <span>4. Reglas, procedimientos y señalización (controles administrativos)</span>
+                    <span className="text-[10px] text-blue-400 font-bold">Medida de organización</span>
                   </label>
                   <textarea
                     rows={2}
@@ -767,17 +890,15 @@ export function RiskFormModal({
                         medidaControlesAdministrativos: e.target.value,
                       })
                     }
-                    placeholder="Ej. POES de operación segura, rotación de personal cada 2 horas, pausas activas, señalización de advertencia..."
+                    placeholder="Ej. Procedimiento seguro de freído POES, rotación cada 2 horas, pausas activas, avisos de advertencia..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
-                    <span>5. Equipos y Elementos de Protección Personal (EPP)</span>
-                    <span className="text-[10px] text-slate-500 font-normal">
-                      Barrera física sobre el trabajador
-                    </span>
+                    <span>5. Elementos de protección personal (EPP - barrera física individual)</span>
+                    <span className="text-[10px] text-emerald-400 font-bold">Barrera personal</span>
                   </label>
                   <textarea
                     rows={2}
@@ -785,7 +906,7 @@ export function RiskFormModal({
                     onChange={(e) =>
                       setFormData({ ...formData, medidaEquiposEPP: e.target.value })
                     }
-                    placeholder="Ej. Careta facial con policarbonato de alta resistencia ANSI Z87.1, guantes de nitrilo térmico 45 cm..."
+                    placeholder="Ej. Careta facial con policarbonato ANSI Z87.1, guantes de nitrilo térmico de 45 cm, peto impermeable..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -829,7 +950,7 @@ export function RiskFormModal({
                 className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer"
               >
                 <Save className="h-4 w-4" />
-                <span>Guardar Registro GTC 45</span>
+                <span>Guardar Cambios</span>
               </button>
             </div>
           </div>

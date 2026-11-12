@@ -1,0 +1,34 @@
+[
+  {
+    "id": "email-1794177847192-448",
+    "trackingCode": "FRK-ENV-2026-518",
+    "to": "jujulis69@gmail.com",
+    "from": "FRIKAZ S.A.S. <frikaz.fritosnacks@gmail.com>",
+    "subject": "Responsabilidades correspondientes a su cargo – Frikaz S.A.S.",
+    "contentSnippet": "Estimado trabajador, adjunto documento...",
+    "tipoNotificacion": "Asignación de Responsabilidades por Cargo",
+    "workerName": "Carlos Mario Rodríguez",
+    "cargo": "Operario de Producción y Freído",
+    "timestamp": "2026-11-08T22:44:07.192Z",
+    "status": "Error en el envío",
+    "provider": "none",
+    "attempts": 1,
+    "errorDetails": "Faltan credenciales del servicio de correo: SMTP_HOST (ej. smtp.gmail.com), SMTP_USER (ej. frikaz.fritosnacks@gmail.com), SMTP_PASS (Contraseña de aplicación de 16 caracteres de Google). No se pueden realizar envíos a destinatarios externos reales sin un servidor SMTP o API Key configurada."
+  },
+  {
+    "id": "email-1794177296497-946",
+    "trackingCode": "FRK-ENV-2026-252",
+    "to": "test@example.com",
+    "from": "FRIKAZ S.A.S. <frikaz.fritosnacks@gmail.com>",
+    "subject": "Prueba Frikaz",
+    "contentSnippet": "Mensaje de prueba",
+    "tipoNotificacion": "Asignación de Responsabilidades / Documental",
+    "workerName": "Trabajador Frikaz",
+    "cargo": "Cargo no especificado",
+    "timestamp": "2026-11-08T22:34:56.497Z",
+    "status": "Error en el envío",
+    "provider": "none",
+    "attempts": 1,
+    "errorDetails": "Faltan credenciales del servicio de correo: SMTP_HOST (ej. smtp.gmail.com), SMTP_USER (ej. frikaz.fritosnacks@gmail.com), SMTP_PASS (Contraseña de aplicación o clave SMTP). No se pueden realizar envíos a destinatarios externos reales sin un servidor SMTP o API Key configurada."
+  }
+]

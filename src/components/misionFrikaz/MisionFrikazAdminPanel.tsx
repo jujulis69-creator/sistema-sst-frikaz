@@ -17,6 +17,7 @@ import {
   getMetricasAdminMision,
   getPasaporteDigital,
 } from '../../services/misionFrikazService';
+import { GameAvatar } from './GameAvatar';
 import {
   ShieldCheck,
   Award,
@@ -358,10 +359,11 @@ export const MisionFrikazAdminPanel: React.FC<MisionFrikazAdminPanelProps> = ({
                       className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4"
                     >
                       <div className="flex items-center gap-4 min-w-0 flex-1">
-                        <img
-                          src={trab.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80'}
-                          alt={trab.nombre}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-slate-700"
+                        <GameAvatar
+                          cargoNombre={trab.cargoNombre}
+                          avatarUrl={trab.avatarUrl}
+                          nombre={trab.nombre}
+                          size="md"
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">

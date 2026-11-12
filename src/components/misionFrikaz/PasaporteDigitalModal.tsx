@@ -3,8 +3,9 @@
 // Frikaz S.A.S. — Pasaporte de Acreditación y Competencias SG-SST
 // ============================================================================
 
-import React from 'react';
 import { PasaporteDigital, PoliticaMisionFrikaz } from '../../types/misionFrikaz';
+import { GameAvatar } from './GameAvatar';
+import { GameSceneImage } from './GameSceneImage';
 import {
   ShieldCheck,
   Award,
@@ -93,10 +94,12 @@ export const PasaporteDigitalModal: React.FC<PasaporteDigitalModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-950/60 rounded-xl p-5 border border-slate-800">
             <div className="flex flex-col items-center justify-center text-center p-3 border-b md:border-b-0 md:border-r border-slate-800">
               <div className="relative mb-3">
-                <img
-                  src={trabajador.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80'}
-                  alt={trabajador.nombre}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-amber-500/50 shadow-xl"
+                <GameAvatar
+                  cargoNombre={trabajador.cargoNombre}
+                  avatarUrl={trabajador.avatarUrl}
+                  nombre={trabajador.nombre}
+                  size="xl"
+                  borderAccent={true}
                 />
                 {esEmbajadorFrikaz && (
                   <div className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-amber-500 text-slate-950 shadow-lg">
@@ -248,10 +251,11 @@ export const PasaporteDigitalModal: React.FC<PasaporteDigitalModalProps> = ({
                       {/* Título de la política */}
                       <div className="flex items-center gap-3 mb-2">
                         {pol.imagenZona && (
-                          <img
+                          <GameSceneImage
                             src={pol.imagenZona}
                             alt={pol.titulo}
-                            className="w-10 h-10 rounded-lg object-cover border border-slate-700 shrink-0"
+                            aspectRatioClass="w-10 h-10 rounded-lg shrink-0 overflow-hidden border border-slate-700"
+                            className="w-full h-full object-cover"
                           />
                         )}
                         <h5 className="font-bold text-xs sm:text-sm text-white line-clamp-2">{pol.titulo}</h5>

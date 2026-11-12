@@ -3,13 +3,17 @@
 // Lobby de Entrada + Mapa de Misiones Interactivo por Sectores de Planta
 // ============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TrabajadorFrikaz,
   PoliticaMisionFrikaz,
   PasaporteDigital,
 } from '../../types/misionFrikaz';
 import { SoundFX } from '../../services/soundEffects';
+import { GameAvatar } from './GameAvatar';
+import { GameSceneImage } from './GameSceneImage';
+import { precargarRecursosCriticos, GAME_IMAGES } from '../../services/gameAssets';
+import { TRABAJADORES_CANONICOS } from '../../services/misionFrikazService';
 import {
   ShieldCheck,
   ShieldAlert,
@@ -28,6 +32,9 @@ import {
   Zap,
   ArrowRight,
   CheckCircle2,
+  Factory,
+  Eye,
+  Check,
 } from 'lucide-react';
 
 interface MisionFrikazGatekeeperProps {
@@ -36,7 +43,7 @@ interface MisionFrikazGatekeeperProps {
   politicas: PoliticaMisionFrikaz[];
   onIniciarMision: (politicaId: string) => void;
   onAbrirPasaporte: () => void;
-  onCambiarTrabajador: () => void;
+  onCambiarTrabajador: (trabajador?: TrabajadorFrikaz) => void;
   onEntrarComoAdmin: () => void;
 }
 
@@ -53,6 +60,10 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
   const [vistaLobby, setVistaLobby] = useState<'PORTADA_HERO' | 'MAPA_MISIONES'>('PORTADA_HERO');
   const [sonidoActivo, setSonidoActivo] = useState(SoundFX.isEnabled());
   const [zonaHover, setZonaHover] = useState<string | null>(null);
+
+  useEffect(() => {
+    precargarRecursosCriticos();
+  }, []);
 
   const { progresos, porcentajeAvance, totalObligatorias, totalSuperadas } = pasaporte;
 
@@ -108,10 +119,12 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
           {/* Tarjeta HUD del Jugador */}
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-3 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl">
-              <img
-                src={trabajador.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80'}
-                alt={trabajador.nombre}
-                className="w-8 h-8 rounded-full object-cover border border-amber-400"
+              <GameAvatar
+                cargoNombre={trabajador.cargoNombre}
+                avatarUrl={trabajador.avatarUrl}
+                nombre={trabajador.nombre}
+                size="sm"
+                priority={true}
               />
               <div className="text-left">
                 <p className="text-xs font-bold text-white leading-none truncate max-w-[130px]">
@@ -193,10 +206,12 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
           
           {/* Fondo de Fábrica con Efecto de Profundidad */}
           <div className="absolute inset-0 z-0">
-            <img
-              src="/src/assets/images/frikaz_game_factory_hero_1794397642002.jpg"
+            <GameSceneImage
+              src="/assets/images/game_factory_hero.webp"
               alt="Fábrica Frikaz S.A.S."
-              className="w-full h-full object-cover object-center filter brightness-[0.4] contrast-125 scale-105 transition-transform duration-1000"
+              priority={true}
+              aspectRatioClass="w-full h-full"
+              className="w-full h-full object-cover object-center filter brightness-[0.4] contrast-125 scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/80" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent pointer-events-none" />
@@ -208,10 +223,12 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
             {/* Personaje Guía con Globo de Diálogo de Videojuego */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 animate-fadeIn">
               <div className="relative">
-                <img
-                  src="/src/assets/images/frikaz_guide_character_1794397643333.jpg"
+                <GameSceneImage
+                  src="/assets/images/game_guide_character.webp"
                   alt="Guía SG-SST"
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-amber-400 shadow-2xl shadow-amber-500/40"
+                  priority={true}
+                  aspectRatioClass="w-20 h-20 sm:w-24 sm:h-24 rounded-full"
+                  className="w-full h-full object-cover border-4 border-amber-400 shadow-2xl shadow-amber-500/40"
                 />
                 <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-amber-500 text-slate-950 font-bold shadow-md">
                   <ShieldCheck className="w-4 h-4" />
@@ -236,7 +253,7 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
             </div>
 
             {/* Radar Visual de Misiones Pendientes */}
-            <div className="inline-flex items-center gap-3 bg-slate-950/80 border border-slate-800 rounded-full px-5 py-2 mb-8 shadow-xl">
+            <div className="inline-flex items-center gap-3 bg-slate-950/80 border border-slate-800 rounded-full px-5 py-2 mb-6 shadow-xl">
               <Target className="w-4 h-4 text-amber-400 animate-spin" />
               <span className="text-xs font-bold text-slate-300">
                 Radar de Planta: <strong className="text-amber-400">{totalObligatorias - totalSuperadas} zonas</strong> pendientes por asegurar
@@ -245,6 +262,59 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
               <span className="text-xs font-bold text-emerald-400">
                 {totalSuperadas} / {totalObligatorias} Zonas Libres
               </span>
+            </div>
+
+            {/* Selector Rápido de los 6 Avatares Ilustrados Oficiales */}
+            <div className="w-full max-w-2xl bg-slate-900/90 border border-slate-800 rounded-2xl p-4 mb-6 backdrop-blur-md shadow-xl">
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5" /> AVATARES OFICIALES FRIKAZ (6 CARGOS CANÓNICOS)
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  Activo: <strong className="text-white">{trabajador.cargoNombre}</strong>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                {TRABAJADORES_CANONICOS.map((t) => {
+                  const esActivo = t.id === trabajador.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => {
+                        SoundFX.playClick();
+                        onCambiarTrabajador(t);
+                      }}
+                      className={`flex flex-col items-center p-2 rounded-xl border transition-all text-center group ${
+                        esActivo
+                          ? 'bg-amber-500/20 border-amber-400 ring-2 ring-amber-400/50 shadow-md shadow-amber-500/20'
+                          : 'bg-slate-950/60 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="relative">
+                        <GameAvatar
+                          cargoNombre={t.cargoNombre}
+                          avatarUrl={t.avatarUrl}
+                          nombre={t.nombre}
+                          size="md"
+                          borderAccent={esActivo}
+                        />
+                        {esActivo && (
+                          <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-amber-500 text-slate-950 shadow">
+                            <Check className="w-3 h-3 stroke-[3]" />
+                          </div>
+                        )}
+                      </div>
+                      <span className={`text-[10px] font-bold mt-1.5 leading-tight truncate w-full ${
+                        esActivo ? 'text-amber-300' : 'text-slate-300 group-hover:text-white'
+                      }`}>
+                        {t.cargoNombre}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Botón Gigante de Comienzo */}
@@ -320,9 +390,10 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
                 >
                   {/* Imagen de la Zona / Escenario con Scrim */}
                   <div className="relative h-48 w-full overflow-hidden">
-                    <img
-                      src={pol.imagenZona || '/src/assets/images/frikaz_zone_frying_line_1794397643230.jpg'}
+                    <GameSceneImage
+                      src={pol.imagenZona || '/assets/images/zone_frying_line.webp'}
                       alt={pol.titulo}
+                      aspectRatioClass="w-full h-full"
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 filter brightness-90 contrast-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
@@ -410,6 +481,91 @@ export const MisionFrikazGatekeeper: React.FC<MisionFrikazGatekeeperProps> = ({
                 </div>
               );
             })}
+          </div>
+
+          {/* Galería de Sectores y Procesos de Planta */}
+          <div className="mt-10 pt-8 border-t border-slate-800">
+            <div className="flex items-center gap-2 mb-2">
+              <Factory className="w-5 h-5 text-amber-400" />
+              <h3 className="text-base sm:text-lg font-black text-white">
+                Sectores Operativos de la Planta Frikaz (Bosa, Bogotá)
+              </h3>
+            </div>
+            <p className="text-xs text-slate-400 mb-6">
+              Recorrido ilustrado por las 6 estaciones principales de fabricación y logística:
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {[
+                {
+                  nombre: 'Área de Fritura',
+                  cargo: 'Operario de Frito',
+                  img: '/assets/images/zone_frying_line.webp',
+                  detalle: 'Freidoras industriales a gas a 180°C y control de choque térmico',
+                },
+                {
+                  nombre: 'Área de Pelado',
+                  cargo: 'Operario de Pelado',
+                  img: '/assets/images/zone_pelado_prep.webp',
+                  detalle: 'Pelado mecanizado con guante de malla de acero inoxidable',
+                },
+                {
+                  nombre: 'Área de Selección',
+                  cargo: 'Operario de Selección',
+                  img: '/assets/images/zone_selection_prep.webp',
+                  detalle: 'Inspección de materia prima, lavado y clasificación de tubérculos',
+                },
+                {
+                  nombre: 'Área de Empaque',
+                  cargo: 'Operario de Empaque',
+                  img: '/assets/images/zone_empaque_line.webp',
+                  detalle: 'Sellado vertical térmico y empaque automático de snacks',
+                },
+                {
+                  nombre: 'Muelle Logístico',
+                  cargo: 'Conductor',
+                  img: '/assets/images/zone_logistics_patio.webp',
+                  detalle: 'Despacho de furgones, inspección PESV y cero alcohol/drogas',
+                },
+                {
+                  nombre: 'Sala de Control',
+                  cargo: 'Gerente',
+                  img: '/assets/images/zone_gerencia_control.webp',
+                  detalle: 'Gestión integral, auditoría SG-SST y supervisión directiva',
+                },
+              ].map((sec) => (
+                <div
+                  key={sec.nombre}
+                  className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-amber-400/50 transition-all group flex flex-col justify-between"
+                >
+                  <div className="relative h-24 w-full overflow-hidden">
+                    <GameSceneImage
+                      src={sec.img}
+                      alt={sec.nombre}
+                      aspectRatioClass="w-full h-full"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                    <div className="absolute bottom-1.5 left-2 right-2">
+                      <span className="text-[11px] font-black text-white block truncate leading-none">
+                        {sec.nombre}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-2.5 flex items-center gap-2">
+                    <GameAvatar cargoNombre={sec.cargo} size="xs" borderAccent={false} />
+                    <div className="min-w-0">
+                      <span className="text-[10px] font-bold text-amber-400 block truncate">
+                        {sec.cargo}
+                      </span>
+                      <span className="text-[9px] text-slate-400 block line-clamp-1">
+                        {sec.detalle}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>

@@ -17,6 +17,9 @@ import {
 } from '../../services/misionFrikazService';
 import { SoundFX } from '../../services/soundEffects';
 import { PoliticaOficialModal } from './PoliticaOficialModal';
+import { GameAvatar } from './GameAvatar';
+import { GameSceneImage } from './GameSceneImage';
+import { GAME_IMAGES } from '../../services/gameAssets';
 import {
   ShieldCheck,
   Award,
@@ -221,9 +224,17 @@ export const MisionFrikazEscapeRoom: React.FC<MisionFrikazEscapeRoomProps> = ({
                   +{politica.puntosXp} XP
                 </span>
               </div>
-              <h1 className="text-xs sm:text-sm font-black text-white truncate max-w-xs sm:max-w-md">
-                {politica.sectorPlantaNombre}
-              </h1>
+              <div className="flex items-center gap-2">
+                <GameAvatar
+                  cargoNombre={trabajador.cargoNombre}
+                  avatarUrl={trabajador.avatarUrl}
+                  nombre={trabajador.nombre}
+                  size="xs"
+                />
+                <h1 className="text-xs sm:text-sm font-black text-white truncate max-w-xs sm:max-w-md">
+                  {politica.sectorPlantaNombre}
+                </h1>
+              </div>
             </div>
           </div>
 
@@ -354,16 +365,27 @@ export const MisionFrikazEscapeRoom: React.FC<MisionFrikazEscapeRoomProps> = ({
               </p>
 
               {resultado.aprobado ? (
-                <div className="mt-6 bg-slate-950/90 max-w-md mx-auto p-4 rounded-2xl border-2 border-amber-400/50 flex items-center gap-4 text-left shadow-lg">
-                  <div className="w-14 h-14 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center shrink-0">
-                    <Award className="w-8 h-8" />
+                <div className="mt-6 bg-slate-950/90 max-w-lg mx-auto p-5 rounded-2xl border-2 border-amber-400/50 flex flex-col sm:flex-row items-center gap-4 text-left shadow-xl">
+                  <div className="relative shrink-0">
+                    <GameAvatar
+                      cargoNombre={trabajador.cargoNombre}
+                      avatarUrl={trabajador.avatarUrl}
+                      nombre={trabajador.nombre}
+                      size="xl"
+                    />
+                    <div className="absolute -bottom-1 -right-1 p-1 rounded-full bg-emerald-500 text-slate-950 shadow">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">
-                      INSIGNIA OFICIAL DESBLOQUEADA
+                      INSIGNIA OFICIAL DESBLOQUEADA · {trabajador.cargoNombre}
                     </span>
-                    <h4 className="font-bold text-sm text-white">{politica.insigniaNombre}</h4>
-                    <p className="text-[11px] text-slate-400">{politica.insigniaDescripcion}</p>
+                    <h4 className="font-bold text-base text-white">{politica.insigniaNombre}</h4>
+                    <p className="text-xs text-slate-400 mt-0.5">{politica.insigniaDescripcion}</p>
+                    <span className="inline-block mt-2 text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40">
+                      Sello registrado en Pasaporte Digital
+                    </span>
                   </div>
                 </div>
               ) : (
@@ -430,19 +452,21 @@ export const MisionFrikazEscapeRoom: React.FC<MisionFrikazEscapeRoomProps> = ({
                 {/* Escenario con Personaje Guía y Diálogo Corto */}
                 <div className="relative rounded-3xl overflow-hidden border-2 border-amber-500/40 shadow-2xl">
                   <div className="relative h-72 sm:h-96 w-full">
-                    <img
-                      src={politica.imagenZona || '/src/assets/images/frikaz_zone_frying_line_1794397643230.jpg'}
+                    <GameSceneImage
+                      src={politica.imagenZona || '/assets/images/zone_frying_line.webp'}
                       alt={politica.sectorPlantaNombre}
+                      aspectRatioClass="w-full h-full"
                       className="w-full h-full object-cover object-center filter brightness-90 contrast-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
 
                     {/* Globo de Diálogo de la Guía SG-SST */}
                     <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 bg-slate-950/90 border-2 border-amber-400/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4 backdrop-blur-md shadow-2xl">
-                      <img
-                        src="/src/assets/images/frikaz_guide_character_1794397643333.jpg"
+                      <GameSceneImage
+                        src="/assets/images/game_guide_character.webp"
                         alt="Guía SG-SST"
-                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-amber-400 shrink-0"
+                        aspectRatioClass="w-14 h-14 sm:w-16 sm:h-16 rounded-full shrink-0"
+                        className="w-full h-full object-cover border-2 border-amber-400"
                       />
                       <div className="min-w-0 flex-1">
                         <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider block">
@@ -527,9 +551,10 @@ export const MisionFrikazEscapeRoom: React.FC<MisionFrikazEscapeRoomProps> = ({
                 {/* Escenario con Hotspots Clickables */}
                 <div className="relative rounded-3xl overflow-hidden border-2 border-slate-800 bg-slate-950 shadow-2xl">
                   <div className="relative h-80 sm:h-[450px] w-full select-none">
-                    <img
-                      src={politica.imagenZona || '/src/assets/images/frikaz_zone_frying_line_1794397643230.jpg'}
+                    <GameSceneImage
+                      src={politica.imagenZona || '/assets/images/zone_frying_line.webp'}
                       alt="Escena Interactiva"
+                      aspectRatioClass="w-full h-full"
                       className="w-full h-full object-cover object-center filter brightness-95 contrast-105"
                     />
 

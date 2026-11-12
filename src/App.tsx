@@ -73,6 +73,8 @@ import { PasaporteDigitalModal } from './components/misionFrikaz/PasaporteDigita
 import { MisionFrikazGatekeeper } from './components/misionFrikaz/MisionFrikazGatekeeper';
 import { MisionFrikazAdminPanel } from './components/misionFrikaz/MisionFrikazAdminPanel';
 import { WorkerSelectorModal } from './components/misionFrikaz/WorkerSelectorModal';
+import { GameAvatar } from './components/misionFrikaz/GameAvatar';
+import { precargarRecursosCriticos } from './services/gameAssets';
 
 type TabView = 'phva_slides' | 'matriz_tabla' | 'matriz_excel' | 'ficha_empresa' | 'matriz_riesgos';
 
@@ -128,6 +130,7 @@ export default function App() {
 
   // Load from local storage on mount
   useEffect(() => {
+    precargarRecursosCriticos();
     const loaded = getPhvaNorms();
     setItems(loaded);
   }, []);
@@ -305,7 +308,13 @@ export default function App() {
           politicas={politicasMision}
           onIniciarMision={(polId) => setActiveMissionPolicyId(polId)}
           onAbrirPasaporte={() => setIsPassportModalOpen(true)}
-          onCambiarTrabajador={() => setIsWorkerSelectorOpen(true)}
+          onCambiarTrabajador={(w) => {
+            if (w) {
+              handleSelectWorker(w);
+            } else {
+              setIsWorkerSelectorOpen(true);
+            }
+          }}
           onEntrarComoAdmin={() => setIsAdminMode(true)}
         />
 
@@ -353,10 +362,11 @@ export default function App() {
               className="flex items-center gap-2 hover:text-white transition-colors group"
               title="Cambiar de colaborador o modo de sesión"
             >
-              <img
-                src={currentWorker.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80'}
-                alt={currentWorker.nombre}
-                className="w-5 h-5 rounded-full object-cover border border-amber-500/50"
+              <GameAvatar
+                cargoNombre={currentWorker.cargoNombre}
+                avatarUrl={currentWorker.avatarUrl}
+                nombre={currentWorker.nombre}
+                size="xs"
               />
               <span className="font-semibold text-white group-hover:text-amber-400">
                 {currentWorker.nombre}

@@ -22,85 +22,74 @@ const STORAGE_KEY_SESION_ACTIVA = 'frikaz_mision_sesion_activa_v2';
 
 // ----------------------------------------------------------------------------
 // PLANTILLA DE TRABAJADORES CANÓNICOS DE FRIKAZ S.A.S.
-// Estrictamente los 7 cargos definidos en CARGOS_SST_CANONICOS sin nombres ficticios
+// Exclusivamente los 6 cargos canónicos autorizados con avatares ilustrados digitales
 // ----------------------------------------------------------------------------
 export const TRABAJADORES_CANONICOS: TrabajadorFrikaz[] = [
   {
+    id: 'FRK-DIR-GERENCIA',
+    nombre: 'Gerente',
+    cedula: '1.014.223.889',
+    cargoId: 'cargo-gerente-general',
+    cargoNombre: 'Gerente',
+    correo: 'frikaz.fritosnacks@gmail.com',
+    area: 'Dirección General y Gestión Estratégica',
+    avatarUrl: '/assets/images/avatar_gerente.webp',
+    esAdmin: true,
+  },
+  {
     id: 'FRK-OPR-FRITO',
-    nombre: 'Colaborador: Operario de Frito',
+    nombre: 'Operario de Frito',
     cedula: '1.020.485.912',
     cargoId: 'cargo-operario-frito',
     cargoNombre: 'Operario de Frito',
     correo: 'frikaz.fritosnacks@gmail.com',
     area: 'Planta de Producción – Área de Cocción y Freidoras Industriales a Gas',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
+    avatarUrl: '/assets/images/avatar_operario_frito.webp',
     esAdmin: false,
   },
   {
     id: 'FRK-OPR-PELADO',
-    nombre: 'Colaborador: Operario de Pelado',
+    nombre: 'Operario de Pelado',
     cedula: '80.124.553',
     cargoId: 'cargo-operario-pelado',
     cargoNombre: 'Operario de Pelado',
     correo: 'frikaz.fritosnacks@gmail.com',
     area: 'Planta de Producción – Área de Pelado, Descascarado y Corte Mecanizado',
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=250&q=80',
+    avatarUrl: '/assets/images/avatar_operario_pelado.webp',
     esAdmin: false,
   },
   {
     id: 'FRK-OPR-SELECCION',
-    nombre: 'Colaborador: Operario de Selección',
+    nombre: 'Operario de Selección',
     cedula: '51.992.304',
     cargoId: 'cargo-operario-seleccion',
     cargoNombre: 'Operario de Selección',
     correo: 'frikaz.fritosnacks@gmail.com',
     area: 'Planta de Producción – Área de Recepción, Selección y Lavado de Materia Prima',
-    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=250&q=80',
+    avatarUrl: '/assets/images/avatar_operario_seleccion.webp',
     esAdmin: false,
   },
   {
     id: 'FRK-OPR-EMPAQUE',
-    nombre: 'Colaborador: Operario de Empaque',
+    nombre: 'Operario de Empaque',
     cedula: '52.981.442',
     cargoId: 'cargo-operario-empaque',
     cargoNombre: 'Operario de Empaque',
     correo: 'frikaz.fritosnacks@gmail.com',
     area: 'Planta de Producción – Área de Empaque, Sellado Térmico y Embalaje',
-    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=250&q=80',
+    avatarUrl: '/assets/images/avatar_operario_empaque.webp',
     esAdmin: false,
   },
   {
     id: 'FRK-CND-LOGISTICA',
-    nombre: 'Colaborador: Conductor',
+    nombre: 'Conductor',
     cedula: '79.882.114',
     cargoId: 'cargo-conductor',
     cargoNombre: 'Conductor',
     correo: 'frikaz.fritosnacks@gmail.com',
     area: 'Logística, Transporte y Distribución Comercial',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80',
+    avatarUrl: '/assets/images/avatar_conductor.webp',
     esAdmin: false,
-  },
-  {
-    id: 'FRK-SST-VIGIA',
-    nombre: 'Colaborador: Coordinador / Vigía de SST',
-    cedula: '1.032.441.876',
-    cargoId: 'cargo-coordinador-vigia-sst',
-    cargoNombre: 'Coordinador / Vigía de SST',
-    correo: 'frikaz.fritosnacks@gmail.com',
-    area: 'Seguridad y Salud en el Trabajo (SG-SST)',
-    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=250&q=80',
-    esAdmin: true,
-  },
-  {
-    id: 'FRK-DIR-GERENCIA',
-    nombre: 'Colaborador: Gerente General',
-    cedula: '1.014.223.889',
-    cargoId: 'cargo-gerente-general',
-    cargoNombre: 'Gerente General',
-    correo: 'frikaz.fritosnacks@gmail.com',
-    area: 'Dirección General y Gestión Estratégica',
-    avatarUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=250&q=80',
-    esAdmin: true,
   },
 ];
 
@@ -126,7 +115,7 @@ export const POLITICAS_MISION_BASE: PoliticaMisionFrikaz[] = [
       'En Frikaz S.A.S., empresa dedicada a la fabricación artesanal de snacks (papas, plátanos y chicharrones), nuestro capital más valioso es el equipo humano. La empresa asume el compromiso legal y moral de proteger la integridad física de todos los colaboradores mediante la identificación de peligros en freidoras a 180°C, ergonomía, suministro de EPP térmico de alta temperatura y mejora continua.',
 
     // Atributos de Videojuego
-    imagenZona: '/src/assets/images/frikaz_zone_frying_line_1794397643230.jpg',
+    imagenZona: '/assets/images/zone_frying_line.webp',
     sectorPlantaNombre: 'Sector Alfa: Línea Central de Freído y Control Térmico',
     dificultad: 'Nivel 1: Recluta',
     puntosXp: 350,
@@ -435,7 +424,7 @@ export const POLITICAS_MISION_BASE: PoliticaMisionFrikaz[] = [
       'Frikaz S.A.S. mantiene una política de TOLERANCIA CERO ante la posesión, consumo, distribución o presencia laboral bajo efectos de bebidas alcohólicas, drogas ilícitas, sustancias psicoactivas o tabaco dentro de las instalaciones de la planta de producción (Bosa) y en los vehículos de reparto. La manipulación de freidoras a 180°C y la conducción de vehículos de carga pesada exigen un estado psicofísico y de reflejos al 100%.',
 
     // Atributos de Videojuego
-    imagenZona: '/src/assets/images/frikaz_zone_logistics_patio_1794397643649.jpg',
+    imagenZona: '/assets/images/zone_logistics_patio.webp',
     sectorPlantaNombre: 'Sector Beta: Muelle de Despacho, Furgones y Cero Adicciones',
     dificultad: 'Nivel 2: Operativo',
     puntosXp: 400,
@@ -696,7 +685,7 @@ export const POLITICAS_MISION_BASE: PoliticaMisionFrikaz[] = [
       'El proceso de freído industrial de papa y plátano en Frikaz S.A.S. opera con aceite vegetal a temperaturas de hasta 180°C sobre quemadores de gas natural de alta potencia. Este instructivo establece los estándares innegociables de inspección preoperacional, presecado de materia prima, purga segura, respuesta ante conatos con acetato de potasio y drenaje ambiental de ACU.',
 
     // Atributos de Videojuego
-    imagenZona: '/src/assets/images/frikaz_zone_eco_waste_1794397659815.jpg',
+    imagenZona: '/assets/images/zone_eco_waste.webp',
     sectorPlantaNombre: 'Sector Gamma: Batería de Freidoras y Gestión Ambiental de ACU',
     dificultad: 'Nivel 3: Experto',
     puntosXp: 450,
@@ -942,18 +931,25 @@ export function getStoredTrabajadores(): TrabajadorFrikaz[] {
       return TRABAJADORES_CANONICOS;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed) || parsed.length !== TRABAJADORES_CANONICOS.length) {
       localStorage.setItem(STORAGE_KEY_TRABAJADORES, JSON.stringify(TRABAJADORES_CANONICOS));
       return TRABAJADORES_CANONICOS;
     }
-    // Asegurar que solo contenga los 7 cargos canónicos y sin nombres ficticios
-    const idsCanonicos = new Set(TRABAJADORES_CANONICOS.map((t) => t.id));
-    const tieneInvalidos = parsed.some((t) => !idsCanonicos.has(t.id));
-    if (tieneInvalidos || parsed.length !== TRABAJADORES_CANONICOS.length) {
+    // Asegurar que solo contenga los 6 cargos autorizados con sus avatares ilustrados oficiales
+    const canonicosMap = new Map(TRABAJADORES_CANONICOS.map((t) => [t.id, t]));
+    const tieneInvalidos = parsed.some((t) => !canonicosMap.has(t.id) || (t.avatarUrl && t.avatarUrl.includes('unsplash')));
+    if (tieneInvalidos) {
       localStorage.setItem(STORAGE_KEY_TRABAJADORES, JSON.stringify(TRABAJADORES_CANONICOS));
       return TRABAJADORES_CANONICOS;
     }
-    return parsed;
+    return parsed.map((t: TrabajadorFrikaz) => {
+      const canon = canonicosMap.get(t.id);
+      return {
+        ...t,
+        avatarUrl: canon ? canon.avatarUrl : t.avatarUrl,
+        cargoNombre: canon ? canon.cargoNombre : t.cargoNombre,
+      };
+    });
   } catch (err) {
     console.error('Error cargando trabajadores:', err);
     return TRABAJADORES_CANONICOS;
